@@ -1,0 +1,48 @@
+.main {
+  background-color: #efefef;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 50px;
+}
+
+/* BANNER */
+.banner {
+  width: 100%;
+  height: 100px;
+  position: relative;
+}
+
+/* CATEGORIAS */
+.filters_line {
+  display: flex;
+  width: 100%;
+}
+.filters_line_content {
+  overflow-x: scroll;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+}
+.filters_line_content {
+  scroll-behavior: smooth;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.filters_line_content::-webkit-scrollbar {
+  display: none;
+}
+.filters_line_option {
+  min-width: 100px;
+  font-size: small;
+  border-radius: 80px;
+  padding: 5px;
+  border: 2px solid transparent;
+  background-color: #efefef;
+  border: var(--default-border);
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+}
+.filters_line_option_selected {
+  border: 2px solid#037e36 !important;
+}
