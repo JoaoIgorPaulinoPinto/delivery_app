@@ -1,6 +1,6 @@
 "use client";
-import FinishOrder from "@/app/src/components/finish-order/finish-order";
-import ProductCard from "@/app/src/components/product-card/product-card";
+import FinishOrder from "@/app/src/components/ui/finish-order/finish-order";
+import ProductCard from "@/app/src/components/ui/product-card/product-card";
 import { Product } from "@/app/src/models/Product";
 import Image from "next/image";
 import { useState } from "react";

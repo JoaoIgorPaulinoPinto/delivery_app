@@ -1,5 +1,5 @@
 .main {
-  background-color: #efefef;
+  background-color: var(--background-color-1);
   width: 100%;
   height: 100%;
   display: flex;
@@ -7,11 +7,25 @@
   padding-bottom: 50px;
 }
 
-/* BANNER */
 .banner {
-  width: 100%;
-  height: 100px;
   position: relative;
+  width: auto;
+
+  height: 130px;
+  overflow: hidden;
+}
+
+.banner_image {
+  animation: fade 1s ease-in-out;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* CATEGORIAS */
@@ -22,8 +36,8 @@
 .filters_line_content {
   overflow-x: scroll;
   display: flex;
-  gap: 10px;
-  padding: 10px;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
 }
 .filters_line_content {
   scroll-behavior: smooth;
@@ -36,13 +50,12 @@
 .filters_line_option {
   min-width: 100px;
   font-size: small;
-  border-radius: 80px;
-  padding: 5px;
-  border: 2px solid transparent;
-  background-color: #efefef;
-  border: var(--default-border);
-  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  background-color: var(--background-color-2);
+  border: var(--def-border);
+  box-shadow: var(--def-shadow-1);
 }
 .filters_line_option_selected {
-  border: 2px solid#037e36 !important;
+  border: 2px solid var(--background-color-3) !important;
 }

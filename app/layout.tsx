@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "./src/components/navbar/navbar";
+import Navbar from "./src/components/ui/navbar/navbar";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",

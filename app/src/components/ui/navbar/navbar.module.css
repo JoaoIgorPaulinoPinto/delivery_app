@@ -1,0 +1,28 @@
+.navbar {
+  z-index: 1000;
+  top: 0;
+  background-color: var(--background-color-3);
+  width: 100%;
+  height: 35px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: var(--size-sm);
+  padding-right: var(--size-sm);
+  border-bottom: var(--default-border);
+  position: sticky;
+}
+.left_side {
+  color: var(--text-colo-1);
+  width: 100%;
+  display: flex;
+  justify-content: left;
+  font-size: var(--font-size-xlg);
+  font-weight: 900;
+  color: var(--text-color-0);
+  text-shadow: 0 0 8px black;
+}
+.right_side {
+  display: flex;
+  justify-content: end;
+}
