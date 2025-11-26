@@ -1,4 +1,5 @@
-import { Product } from "@/app/src/models/Product";
+import { Product } from "@/src/models/Product";
+import { useCarrinho } from "@/src/store/Carrinho";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -6,6 +7,8 @@ import styles from "./product-card.module.css";
 
 export default function ProductCard(product: Product) {
   const [quant, setQuant] = useState(0);
+
+  const { add, remove } = useCarrinho();
 
   return (
     <div className={styles.product_card}>
@@ -25,13 +28,19 @@ export default function ProductCard(product: Product) {
         </div>
         <div className={styles.product_card_footer}>
           <button
-            onClick={() => quant > 0 && setQuant(quant - 1)}
+            onClick={() => {
+              remove(product);
+              setQuant(quant - 1);
+            }}
             className={styles.add_btn}
           >
             <Minus size={12} />
           </button>
           <button
-            onClick={() => setQuant(quant + 1)}
+            onClick={() => {
+              add(product);
+              setQuant(quant + 1);
+            }}
             className={styles.add_btn}
           >
             <Plus size={12} />

@@ -1,7 +1,8 @@
 "use client";
-import FinishOrder from "@/app/src/components/ui/finish-order/finish-order";
-import ProductCard from "@/app/src/components/ui/product-card/product-card";
-import { Product } from "@/app/src/models/Product";
+import FinishOrder from "@/src/components/ui/finish-order/finish-order";
+import ProductCard from "@/src/components/ui/product-card/product-card";
+import { Product } from "@/src/models/Product";
+import { useCarrinho } from "@/src/store/Carrinho";
 import Image from "next/image";
 import { useState } from "react";
 import banner from "../../../public/banner.jpg";
@@ -23,78 +24,92 @@ export default function Home() {
 
   const products: Product[] = [
     {
+      id: 1,
       name: "BATATA FRITA GRANDE",
       description: "Porção grande de batata frita.",
       price: 18.0,
       imgUrl: foto_comida,
     },
     {
+      id: 2,
       name: "CACHORRO QUENTE",
       description: "Pão, salsicha, molho e batata palha.",
       price: 14.0,
       imgUrl: foto_comida,
     },
     {
+      id: 3,
       name: "MILKSHAKE CHOCOLATE",
       description: "Milkshake com sorvete e calda.",
       price: 25.9,
       imgUrl: foto_comida,
     },
     {
+      id: 4,
       name: "X-UCO NATURAL",
       description: "Sabores: laranja, limão e queijo.",
       price: 9.0,
       imgUrl: foto_comida,
     },
     {
+      id: 5,
       name: "BATATA FRITA GRANDE",
       description: "Porção grande de batata frita.",
       price: 18.0,
       imgUrl: foto_comida,
     },
     {
+      id: 6,
       name: "CACHORRO QUENTE",
       description: "Pão, salsicha, molho e batata palha.",
       price: 14.0,
       imgUrl: foto_comida,
     },
     {
+      id: 7,
       name: "MILKSHAKE CHOCOLATE",
       description: "Milkshake com sorvete e calda.",
       price: 25.9,
       imgUrl: foto_comida,
     },
     {
+      id: 8,
       name: "X-UCO NATURAL",
       description: "Sabores: laranja, limão e queijo.",
       price: 9.0,
       imgUrl: foto_comida,
     },
     {
+      id: 9,
       name: "BATATA FRITA GRANDE",
       description: "Porção grande de batata frita.",
       price: 18.0,
       imgUrl: foto_comida,
     },
     {
+      id: 10,
       name: "CACHORRO QUENTE",
       description: "Pão, salsicha, molho e batata palha.",
       price: 14.0,
       imgUrl: foto_comida,
     },
     {
+      id: 11,
       name: "MILKSHAKE CHOCOLATE",
       description: "Milkshake com sorvete e calda.",
       price: 25.9,
       imgUrl: foto_comida,
     },
     {
+      id: 12,
       name: "X-UCO NATURAL",
       description: "Sabores: laranja, limão e queijo.",
       price: 9.0,
       imgUrl: foto_comida,
     },
   ];
+
+  const { produtos } = useCarrinho();
 
   return (
     <div className={styles.main}>
@@ -124,9 +139,16 @@ export default function Home() {
 
       {/* PRODUTOS */}
       <div className={styles.products}>
-        {products.map((product, i) => (
-          <ProductCard key={i} {...product} />
-        ))}
+        {products.map((product, i) => {
+          const p = produtos.find((item) => item.id === product.id);
+
+          // IMPORTANTE: retornar o JSX
+          return p ? (
+            <ProductCard key={i} {...p} />
+          ) : (
+            <ProductCard key={i} {...product} />
+          );
+        })}
       </div>
 
       {/* RODAPÉ */}
