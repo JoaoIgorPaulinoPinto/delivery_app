@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: var(--def-shadow-1);
-  border-bottom: var(--def-border);
+  border: var(--def-border);
 }
 
 /* Label de quantidade */
@@ -36,12 +36,13 @@
   text-align: center;
   font-size: var(--font-size-xlg);
   border: var(--def-border);
-  color: var(--text-color-3);
+  color: var(--text-color-6);
   width: var(--size-lg);
   height: var(--size-lg);
   font-weight: 600;
   border-radius: var(--radius-xs);
-  border: 1px solid var(--background-color-3);
+  background-color: var(--background-color-3);
+  border: var(--def-border);
 }
 
 .product_card_footer {

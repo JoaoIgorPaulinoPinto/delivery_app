@@ -1,0 +1,171 @@
+/* ---------- OVERLAY ---------- */
+.confirmationOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 2000;
+  animation: fadeIn 0.25s ease;
+}
+
+/* ---------- MODAL ---------- */
+.confirmationContainer {
+  width: 92%;
+  background: var(--background-color-1);
+  padding: var(--space-xl); /* reduzido */
+  border-radius: var(--radius-xs);
+  box-shadow: 0 -3px 16px rgba(0, 0, 0, 0.18);
+  animation: slideUp 0.3s ease;
+  position: absolute;
+  top: 22%; /* levemente mais alto */
+}
+
+/* ---------- FECHAR ---------- */
+.modalCloseButton {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  background: none;
+  border: none;
+  color: var(--text-color-2);
+  cursor: pointer;
+}
+
+/* ---------- TÍTULO ---------- */
+.title {
+  font-size: var(--font-size-lg); /* reduzido */
+  font-weight: bold;
+  color: var(--text-color-1);
+  margin-bottom: var(--space-sm);
+}
+
+/* ---------- TOTAL ---------- */
+.totalBox {
+  background: var(--background-color-2);
+  padding: var(--space-sm); /* reduzido */
+  border-radius: var(--radius-xs);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  margin-bottom: var(--space-md);
+}
+
+.totalBox span {
+  color: var(--text-color-2);
+}
+
+.totalBox strong {
+  color: var(--background-color-5);
+}
+
+/* ---------- ENDEREÇO ---------- */
+.addressBox {
+  background: var(--background-color-2);
+  padding: var(--space-md); /* reduzido */
+  border-radius: var(--radius-xs);
+  margin-bottom: var(--space-md);
+}
+
+.addressTitle {
+  font-weight: bold;
+  color: var(--text-color-1);
+  margin-bottom: var(--space-xxs);
+  font-size: var(--font-size-md);
+}
+
+.addressText {
+  color: var(--text-color-2);
+  line-height: 1.25;
+  font-size: var(--font-size-md);
+}
+
+/* ---------- AVISO ---------- */
+.warningText {
+  font-size: var(--font-size-md); /* menor */
+  background: #ffe6e6;
+  border-left: 3px solid #d9534f; /* menor */
+  padding: var(--space-sm); /* reduzido */
+  border-radius: var(--radius-xs);
+  color: #b8423e;
+  font-weight: bold;
+  margin-bottom: var(--space-md);
+  line-height: 1.3;
+}
+
+/* ---------- INPUTS ---------- */
+.modalInputGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--space-md); /* reduzido */
+}
+
+.modalInputGroup label {
+  font-weight: bold;
+  color: var(--text-color-1);
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-md);
+}
+
+.modalInputGroup input {
+  padding: var(--space-sm); /* reduzido */
+  border-radius: var(--radius-sm);
+  border: var(--def-border);
+  background: var(--background-color-2);
+  color: var(--text-color-2);
+  font-size: var(--font-size-md);
+}
+
+/* ---------- BOTÃO ---------- */
+.modalConfirmButton {
+  width: 100%;
+  padding: var(--space-md); /* reduzido */
+  background: var(--background-color-4);
+  color: var(--text-color-0);
+  border: none;
+  border-radius: var(--radius-xs);
+  font-size: var(--font-size-lg); /* reduzido */
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.modalConfirmButton:active {
+  transform: scale(0.97);
+}
+
+/* ---------- ANIMAÇÕES ---------- */
+@keyframes fadeIn {
+  from {
+    background: rgba(0, 0, 0, 0);
+  }
+  to {
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(40px); /* reduzido */
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 380px) {
+  .confirmationContainer {
+    padding: var(--space-lg);
+    top: 18%;
+  }
+
+  .modalConfirmButton {
+    padding: var(--space-sm);
+  }
+}

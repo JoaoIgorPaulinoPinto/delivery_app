@@ -48,6 +48,7 @@
   display: none;
 }
 .filters_line_option {
+  color: var(--text-color-1);
   min-width: 100px;
   font-size: small;
   border-radius: var(--radius-md);
@@ -57,5 +58,5 @@
   box-shadow: var(--def-shadow-1);
 }
 .filters_line_option_selected {
-  border: 2px solid var(--background-color-3) !important;
+  border: 2px solid var(--text-color-1) !important;
 }

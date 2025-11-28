@@ -46,7 +46,7 @@ export default function Home() {
     },
     {
       id: 4,
-      name: "X-UCO NATURAL",
+      name: "X-SUCO NATURAL",
       description: "Sabores: laranja, limão e queijo.",
       price: 9.0,
       imgUrl: foto_comida,
@@ -74,7 +74,7 @@ export default function Home() {
     },
     {
       id: 8,
-      name: "X-UCO NATURAL",
+      name: "X-SUCO NATURAL",
       description: "Sabores: laranja, limão e queijo.",
       price: 9.0,
       imgUrl: foto_comida,
@@ -109,7 +109,7 @@ export default function Home() {
     },
   ];
 
-  const { produtos } = useCarrinho();
+  const produtos = useCarrinho((state) => state.produtos);
 
   return (
     <div className={styles.main}>
@@ -138,23 +138,22 @@ export default function Home() {
       </div>
 
       {/* PRODUTOS */}
-      <div className={styles.products}>
-        {products.map((product, i) => {
-          const p = produtos.find((item) => item.id === product.id);
 
-          // IMPORTANTE: retornar o JSX
-          return p ? (
-            <ProductCard key={i} {...p} />
-          ) : (
-            <ProductCard key={i} {...product} />
+      <div className={styles.products}>
+        {products.map((product) => {
+          const p = produtos.find((item) => item.id === product.id);
+          return (
+            <ProductCard
+              key={product.id + "-" + (p?.quantity ?? 0)}
+              {...(p ?? product)}
+            />
           );
         })}
       </div>
 
       {/* RODAPÉ */}
-      <div className={styles.footer}>
-        <FinishOrder />
-      </div>
+      <div className={styles.footer}></div>
+      <FinishOrder />
     </div>
   );
 }

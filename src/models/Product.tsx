@@ -7,4 +7,6 @@ export interface Product {
   // category: string;
   description: string;
   imgUrl: StaticImageData;
+  quantity?: number;
+  obs?: string;
 }

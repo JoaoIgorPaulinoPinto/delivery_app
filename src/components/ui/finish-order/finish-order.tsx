@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import AddressModal, { AddressData } from "../modal/adress-modal";
 import ConfirmationModal from "../modal/confirmation-modal";
 import PopUpModal from "../modal/pop-up-modal";
 import styles from "./finish-order.module.css";
@@ -34,14 +35,17 @@ export default function FinishOrder() {
   const handleFinalize = () => {
     setIsConfirmationModalOpen(true);
   };
-
+  const clear = useCarrinho((state) => state.clear);
+  const produtos = useCarrinho((state) => state.produtos);
   // Lógica para confirmar o pedido (chamada dentro do modal)
   const handleConfirmOrder = (name: string, phone: string) => {
     console.log("Pedido Finalizado!");
     console.log("Nome:", name);
     console.log("Telefone:", phone);
     console.log("Total:", fixedTotal);
+    console.log("Pedido:", produtos);
 
+    clear();
     // Fechar os dois painéis
     setIsConfirmationModalOpen(false);
     setIsOpen(false);
@@ -49,9 +53,8 @@ export default function FinishOrder() {
     // Aqui você adicionaria a lógica real de envio para a API/WhatsApp
     alert(`Pedido de ${fixedTotal} confirmado para ${name}!`);
   };
-
-  const { produtos } = useCarrinho();
-
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [address, setAddress] = useState<AddressData | undefined>(undefined);
   return (
     <div className={isOpen ? styles.confirmationOverlay : ""}>
       <div className={styles.footer}>
@@ -122,14 +125,27 @@ export default function FinishOrder() {
                     style={{ display: "flex", flexDirection: "row", gap: 10 }}
                   >
                     <span className={styles.frete}>R$ 7,54</span>
-                    <button className={styles.changeAddress}>Alterar</button>
+                    <button
+                      onClick={() => setIsAddressModalOpen(true)}
+                      className={styles.changeAddress}
+                    >
+                      Alterar
+                    </button>
                   </div>
                 ) : (
                   ""
                 )}
               </div>
             </div>
-
+            <AddressModal
+              isOpen={isAddressModalOpen}
+              onClose={() => setIsAddressModalOpen(false)}
+              initialAddress={address}
+              onSave={(data) => {
+                setAddress(data);
+                setIsAddressModalOpen(false);
+              }}
+            />
             {/* Pagamento */}
             <div className={styles.section}>
               <h3>Forma de Pagamento</h3>
@@ -185,12 +201,20 @@ export default function FinishOrder() {
               {produtos.map((p) => {
                 return (
                   <div key={p.id} className={styles.product_row}>
-                    <span className={styles.p_name}>{p.name}</span>
-                    <span className={styles.p_quant}>{p.quantidade}</span>
-                    <span className={styles.p_price}>{p.price}</span>
-                    <span className={styles.p_total}>
-                      {p.quantidade * p.price}
-                    </span>
+                    <div className={styles.product_row_grid}>
+                      <span className={styles.p_name}>{p.name}</span>
+                      <span className={styles.p_quant}>{p.quantity}</span>
+                      <span className={styles.p_price}>{p.price}</span>
+                      <span className={styles.p_total}>
+                        {p.quantity || 0 * p.price}
+                      </span>
+                    </div>
+                    <input
+                      className={styles.product_row_input}
+                      type="text"
+                      placeholder="oberservação..."
+                      onChange={(e) => (p.obs = e.target.value)}
+                    />
                   </div>
                 );
               })}
