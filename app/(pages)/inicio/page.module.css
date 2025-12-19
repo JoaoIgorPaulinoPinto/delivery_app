@@ -60,3 +60,34 @@
 .filters_line_option_selected {
   border: 2px solid var(--text-color-1) !important;
 }
+.clear_cart_button {
+  display: flex;
+  align-self: flex-end;
+  margin: auto 10px;
+  padding: var(--space-xs) var(--space-xl);
+  background-color: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-color-2);
+  font-size: var(--font-size-md);
+  font-style: italic;
+  text-decoration: underline;
+  letter-spacing: 1px;
+}
+
+.search_bar {
+  width: 90%;
+  display: flex;
+  align-self: flex-end;
+  margin: 10px 10px;
+}
+.search_bar input {
+  width: 100%;
+  padding: var(--space-xs) var(--space-xl);
+  background-color: var(--background-color-2);
+  border: var(--def-border);
+  box-shadow: var(--def-shadow-1);
+  border-radius: var(--radius-sm);
+  color: var(--text-color-2);
+  font-size: var(--font-size-md);
+}

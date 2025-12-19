@@ -2,16 +2,19 @@
 
 import { X } from "lucide-react";
 import { useState } from "react";
+import { EnderecoData } from "./adress-modal";
 import styles from "./confirmation-modal.module.css";
 
 interface ConfirmationModalProps {
+  endereco?: EnderecoData;
   total: string;
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (name: string, phone: string) => void;
+  onConfirm: (name: string, phone: string, obs: string) => void;
 }
 
 export default function ConfirmationModal({
+  endereco,
   total,
   isOpen,
   onClose,
@@ -19,6 +22,7 @@ export default function ConfirmationModal({
 }: ConfirmationModalProps) {
   const [userName, setUserName] = useState("");
   const [userPhone, setUserPhone] = useState("");
+  const [obs, setobs] = useState("");
 
   if (!isOpen) return null;
 
@@ -27,7 +31,7 @@ export default function ConfirmationModal({
       alert("Preencha seu nome e telefone!");
       return;
     }
-    onConfirm(userName, userPhone);
+    onConfirm(userName, userPhone, obs);
   };
 
   return (
@@ -49,7 +53,11 @@ export default function ConfirmationModal({
 
         <div className={styles.addressBox}>
           <div className={styles.addressTitle}>Endereço de Entrega</div>
-          <div className={styles.addressText}>Rua dos Bobos, número 0</div>
+          <div className={styles.addressText}>
+            {endereco
+              ? `${endereco.rua}, ${endereco.numero} - ${endereco.cidade}/${endereco.uf}`
+              : "Nenhum endereço selecionado"}
+          </div>
         </div>
 
         <div className={styles.modalInputGroup}>
@@ -69,6 +77,15 @@ export default function ConfirmationModal({
             value={userPhone}
             onChange={(e) => setUserPhone(e.target.value)}
             placeholder="(99) 99999-9999"
+          />
+        </div>
+        <div className={styles.modalInputGroup}>
+          <label>Observação</label>
+          <input
+            type="text"
+            value={obs}
+            onChange={(e) => setobs(e.target.value)}
+            placeholder="Sem cebola, por favor!"
           />
         </div>
 

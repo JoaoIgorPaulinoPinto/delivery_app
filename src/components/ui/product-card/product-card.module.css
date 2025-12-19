@@ -50,11 +50,20 @@
   gap: var(--space-sm);
 }
 
+.product_img img {
+  object-fit: cover;
+  border-radius: var(--radius-xs);
+  font-size: xx-small;
+  width: 70px;
+  height: 70px;
+}
 .product_img {
   object-fit: cover;
   border-radius: var(--radius-xs);
+  font-size: xx-small;
+  width: 70px;
+  height: 70px;
 }
-
 .product_info {
   flex: 1;
 }

@@ -1,30 +1,30 @@
-import { Product } from "@/src/models/Product";
+/* eslint-disable @next/next/no-img-element */
+import { Produto } from "@/src/models/Produto";
 import { useCarrinho } from "@/src/store/Carrinho";
 import { Minus, Plus } from "lucide-react";
-import Image from "next/image";
 import styles from "./product-card.module.css";
 
-export default function ProductCard(product: Product) {
+export default function ProductCard(product: Produto) {
   const { add, remove } = useCarrinho();
 
   return (
     <div className={styles.product_card}>
       <div className={styles.product_card_head}>
-        <Image
+        <img
           src={product.imgUrl}
-          alt={product.name}
-          width={70}
-          height={70}
+          alt={product.nome}
           className={styles.product_img}
         />
 
         <div className={styles.product_info}>
-          <h3>{product.name}</h3>
-          <p>{product.description}</p>
-          <span className={styles.price}>R$ {product.price.toFixed(2)}</span>
+          <h3>{product.nome}</h3>
+          <p>{product.descricao}</p>
+          <span className={styles.price}>
+            R$ {product.preco.toFixed(2).replace(".", ",")}
+          </span>
 
-          {(product.quantity ?? 0) > 0 && (
-            <label className={styles.quant_label}>{product.quantity}x</label>
+          {(product.quantidade ?? 0) > 0 && (
+            <label className={styles.quant_label}>{product.quantidade}x</label>
           )}
         </div>
 

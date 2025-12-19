@@ -204,6 +204,7 @@
   border-radius: var(--radius-sm);
   border: var(--def-border);
   background-color: var(--background-color-2);
+  color: var(--text-color-1);
 }
 
 .total {
@@ -224,7 +225,6 @@
   font-size: var(--font-size-lg);
   font-weight: bold;
 }
-
 .products_table {
   margin-bottom: var(--space-md);
   background: var(--background-color-2);
@@ -232,12 +232,10 @@
   border-radius: var(--radius-xs);
   max-height: 220px;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
   margin-top: var(--space-lg);
 }
 
+/* Scroll */
 .products_table::-webkit-scrollbar {
   width: 6px;
 }
@@ -246,42 +244,37 @@
   border-radius: var(--radius-xs);
 }
 
-.products_header {
-  display: grid;
-  grid-template-columns: 2fr 0.7fr 1fr 1fr;
-  padding: 6px var(--space-lg);
-  font-size: var(--font-size-md);
-  color: var(--text-color-1);
-  background: var(--background-color-3);
-  border-radius: var(--radius-xs);
+/* TABELA */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Header fixo */
+.table thead th {
   position: sticky;
   top: 0;
   z-index: 10;
+  background: var(--background-color-3);
+  padding: 6px var(--space-lg);
+  text-align: left;
+  font-size: var(--font-size-md);
+  color: var(--text-color-1);
 }
 
-.product_row {
+/* Linhas */
+.table tbody tr {
   background: var(--background-color-3);
-  padding: var(--space-lg);
   border-radius: var(--radius-xs);
   font-size: var(--font-size-sl);
-  align-items: center;
-}
-.product_row_grid {
-  display: grid;
-  grid-template-columns: 2fr 0.7fr 1fr 1fr;
-}
-.product_row_input {
-  margin-top: var(--space-xs);
-  background: var(--background-color-2);
-  padding: var(--space-xs) var(--space-md);
-  border-radius: 5px;
-  border: 1px solid #0000002f;
-  font-size: 10px;
-  align-items: center;
-  border: var(--def-border);
-  width: 100%;
 }
 
+/* Células */
+.table td {
+  padding: var(--space-lg);
+}
+
+/* Alinhamentos iguais ao grid */
 .p_quant,
 .p_price,
 .p_total {

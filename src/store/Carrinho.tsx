@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Product } from "../models/Product";
+import { Produto } from "../models/Produto";
 
 type CarrinhoState = {
-  produtos: Product[];
-  add: (product: Product) => void;
-  remove: (product: Product) => void;
+  produtos: Produto[];
+  add: (product: Produto) => void;
+  remove: (product: Produto) => void;
   clear: () => void;
-  loadProducts: (list: Product[]) => void;
+  loadProducts: (list: Produto[]) => void;
 };
 
 export const useCarrinho = create<CarrinhoState>()(
@@ -30,14 +30,17 @@ export const useCarrinho = create<CarrinhoState>()(
             return {
               produtos: state.produtos.map((p) =>
                 p.id === product.id
-                  ? { ...p, quantity: (p.quantity ?? 0) + 1 }
+                  ? { ...p, quantidade: (p.quantidade ?? 0) + 1 }
                   : p
               ),
             };
           }
 
           return {
-            produtos: [...state.produtos, { ...product, quantity: 1, obs: "" }],
+            produtos: [
+              ...state.produtos,
+              { ...product, quantidade: 1, obs: "" },
+            ],
           };
         }),
 
@@ -46,7 +49,7 @@ export const useCarrinho = create<CarrinhoState>()(
           const item = state.produtos.find((p) => p.id === product.id);
           if (!item) return state;
 
-          if ((item.quantity ?? 0) <= 1) {
+          if ((item.quantidade ?? 0) <= 1) {
             return {
               produtos: state.produtos.filter((p) => p.id !== product.id),
             };
@@ -55,7 +58,7 @@ export const useCarrinho = create<CarrinhoState>()(
           return {
             produtos: state.produtos.map((p) =>
               p.id === product.id
-                ? { ...p, quantity: (p.quantity ?? 0) - 1 }
+                ? { ...p, quantidade: (p.quantidade ?? 0) - 1 }
                 : p
             ),
           };
