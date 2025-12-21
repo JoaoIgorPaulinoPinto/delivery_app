@@ -1,36 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Delivery App
 
-## Getting Started
+![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
+![Frontend](https://img.shields.io/badge/Frontend-Next.js-black)
+![Framework](https://img.shields.io/badge/Framework-React-blue)
 
-First, run the development server:
+---
 
-```bash
+## Sobre o Projeto
+
+Este projeto é o **frontend de um aplicativo de delivery**, desenvolvido em **Next.js**.
+Ele consome uma **API REST desenvolvida em ASP.NET Web API**, sendo responsável pela interface do usuário, fluxo de pedidos e interação com o backend.
+
+---
+
+## Funcionalidades
+
+- Interface web responsiva
+- Listagem de estabelecimentos
+- Visualização de produtos
+- Carrinho de compras
+- Criação de pedidos
+- Acompanhamento de status
+- Integração com API backend (.NET Web API)
+- Gerenciamento de estado do carrinho
+- Fluxo de checkout
+
+---
+
+## Tecnologias Utilizadas
+
+- Next.js
+- React
+- TypeScript / JavaScript
+- Axios / Fetch API
+- CSS / Tailwind / Styled Components (conforme configuração)
+- Integração com API REST
+
+---
+
+## Como Executar o Projeto
+
+### Requisitos
+
+- Node.js
+- NPM ou Yarn
+- API backend em execução
+
+---
+
+### Executar Localmente
+
+1. Clone o repositório:
+git clone https://github.com/JoaoIgorPaulinoPinto/delivery_app.git
+
+csharp
+Copy code
+
+2. Instale as dependências:
+npm install
+
+ou
+yarn install
+
+markdown
+Copy code
+
+3. Crie o arquivo de ambiente:
+.env.local
+
+makefile
+Copy code
+
+Exemplo:
+NEXT_PUBLIC_API_URL=http://localhost:5001
+
+markdown
+Copy code
+
+4. Execute o projeto:
 npm run dev
-# or
+
+ou
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+markdown
+Copy code
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+5. Acesse no navegador:
+http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+yaml
+Copy code
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Estrutura do Projeto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+delivery_app/
+├── app/
+├── components/
+├── services/
+├── store/
+├── public/
+├── styles/
+└── README.md
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+yaml
+Copy code
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Backend
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Este frontend consome a API desenvolvida em ASP.NET Web API.
+
+Repositório do backend:
+https://github.com/JoaoIgorPaulinoPinto/delivery_app-api
+
+---
+
+## Autor
+
+João Igor Paulino Pinto  
+GitHub: https://github.com/JoaoIgorPaulinoPinto
+
+---
+
+## Licença
+
+Copyright © 2025 João Igor Paulino Pinto
+
+Este projeto possui **licença privada**.
+
+O código-fonte está disponível apenas para **visualização**.
+É proibido copiar, modificar, distribuir ou utilizar este projeto, total ou parcialmente, sem autorização prévia do autor.
+
+Todos os direitos reservados.
