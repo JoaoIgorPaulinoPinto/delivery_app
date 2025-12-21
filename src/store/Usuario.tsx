@@ -1,40 +1,63 @@
-import { Endereco } from "@/src/components/ui/modal/adress-modal";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import Usuario from "../models/Usuario";
+import { EnderecoPedido, UsuarioPedido } from "../models/models";
+
+// Definimos o estado inicial para reutilizar no reset
+const initialUsuario: UsuarioPedido = { nome: "", telefone: "" };
+const initialEndereco: EnderecoPedido = {
+  cep: 0,
+  uf: "",
+  cidade: "",
+  rua: "",
+  numero: 0,
+  bairro: "",
+  complemento: "",
+};
 
 type UsuarioState = {
-  usuario: Usuario;
-  endereco: Endereco;
-  set: (usuario: Usuario) => void;
+  usuario: UsuarioPedido;
+  endereco: EnderecoPedido;
+  setUsuario: (usuario: UsuarioPedido) => void;
   setNome: (nome: string) => void;
   setTelefone: (telefone: string) => void;
-  setEndereco: (endereco: Endereco) => void;
-  reset: () => void; // Boa prática para logout
+  setEndereco: (endereco: EnderecoPedido) => void;
+  reset: () => void;
 };
 
 export const useUsuario = create<UsuarioState>()(
   persist(
     (set) => ({
-      // Inicialize com valores padrão para evitar erros de undefined
-      usuario: { nome: "", telefone: "" } as Usuario,
-      endereco: {} as Endereco,
+      usuario: initialUsuario,
+      endereco: initialEndereco,
 
-      set: (usuario) => set({ usuario }),
+      // Atualiza o objeto usuario inteiro
+      setUsuario: (usuario) => set({ usuario }),
 
+      // Atualiza apenas o nome dentro do objeto usuario
       setNome: (nome) =>
-        set((state) => ({ usuario: { ...state.usuario, nome } })),
+        set((state) => ({
+          usuario: { ...state.usuario, nome },
+        })),
 
+      // Atualiza apenas o telefone dentro do objeto usuario
       setTelefone: (telefone) =>
-        set((state) => ({ usuario: { ...state.usuario, telefone } })),
+        set((state) => ({
+          usuario: { ...state.usuario, telefone },
+        })),
 
+      // Atualiza o endereço
       setEndereco: (endereco) => set({ endereco }),
 
-      reset: () => set({ usuario: {} as Usuario, endereco: {} as Endereco }),
+      // Limpa os dados (útil para logout ou após finalizar pedido)
+      reset: () =>
+        set({
+          usuario: initialUsuario,
+          endereco: initialEndereco,
+        }),
     }),
     {
       name: "usuario-storage",
-      storage: createJSONStorage(() => localStorage), // Garante o uso do localStorage
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );

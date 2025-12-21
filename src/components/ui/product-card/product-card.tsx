@@ -1,10 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
-import { Produto } from "@/src/models/Produto";
+import { ProdutoPedido } from "@/src/models/models";
 import { useCarrinho } from "@/src/store/Carrinho";
 import { Minus, Plus } from "lucide-react";
 import styles from "./product-card.module.css";
 
-export default function ProductCard(product: Produto) {
+export default function ProductCard(product: ProdutoPedido) {
   const { add, remove } = useCarrinho();
 
   return (

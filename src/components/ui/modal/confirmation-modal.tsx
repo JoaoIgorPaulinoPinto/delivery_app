@@ -1,12 +1,12 @@
 "use client";
 
+import { EnderecoPedido } from "@/src/models/models";
 import { X } from "lucide-react";
 import { useState } from "react";
-import { Endereco } from "./adress-modal";
 import styles from "./confirmation-modal.module.css";
 
 interface ConfirmationModalProps {
-  endereco?: Endereco;
+  endereco?: EnderecoPedido | null;
   total: string;
   isOpen: boolean;
   onClose: () => void;

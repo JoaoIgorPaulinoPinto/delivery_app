@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import Produto from "../models/Produto";
+import { ProdutoPedido } from "../models/models";
 
 type CarrinhoState = {
-  produtos: Produto[];
-  add: (product: Produto) => void;
-  remove: (product: Produto) => void;
+  produtos: ProdutoPedido[];
+  add: (product: ProdutoPedido) => void;
+  remove: (product: ProdutoPedido) => void;
   clear: () => void;
-  loadProducts: (list: Produto[]) => void;
+  loadProducts: (list: ProdutoPedido[]) => void;
 };
 
 export const useCarrinho = create<CarrinhoState>()(

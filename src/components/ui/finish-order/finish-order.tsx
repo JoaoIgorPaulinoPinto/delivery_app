@@ -1,91 +1,68 @@
 "use client";
 
-import { MapPin, ShoppingCart, Truck, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { MapPin, ShoppingCart, Trash2, Truck, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
-import Pedido from "@/src/models/Pedido";
+import { EnderecoPedido, Pedido } from "@/src/models/models";
 import { API } from "@/src/Services/API";
 import { useCarrinho } from "@/src/store/Carrinho";
+import { useEstabelecimento } from "@/src/store/Estabelecimento";
+import { useUsuario } from "@/src/store/Usuario";
 
-import AddressModal, { Endereco } from "../modal/adress-modal";
+import AddressModal from "../modal/adress-modal";
 import ConfirmationModal from "../modal/confirmation-modal";
 import PopUpModal from "../modal/pop-up-modal";
-
-import pedidoProduto from "@/src/models/PedidoProduto";
-import { useUsuario } from "@/src/store/Usuario";
 import styles from "./finish-order.module.css";
 
-/* =======================
-   TYPES
-======================= */
 type PaymentMethod = {
   id: number;
   nome: string;
 };
 
-/* =======================
-   COMPONENT
-======================= */
 export default function FinishOrder() {
-  const api = new API();
+  const api = useMemo(() => new API(), []);
   const produtos = useCarrinho((state) => state.produtos);
+  const { remove, clear } = useCarrinho();
   const usuario = useUsuario();
-  const clear = useCarrinho((state) => state.clear);
-  /* UI STATES */
+  const { estabelecimento } = useEstabelecimento();
+
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [deliveryType, setDeliveryType] = useState<"retirada" | "entrega">(
     "retirada"
   );
-
-  /* PAYMENT */
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
     number | null
   >(null);
-
-  /* ADDRESS */
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
-  /* CART */
-
-  /* =======================
-     EFFECTS
-  ======================= */
   useEffect(() => {
     const fetchPaymentMethods = async () => {
       try {
         const res = await api.GetPaymentMeth();
         setPaymentMethods(res.data);
-        console.log(res.data);
       } catch (err) {
-        console.error("Erro ao \buscar métodos de pagamento", err);
+        console.error("Erro ao buscar métodos de pagamento", err);
       }
     };
-
     fetchPaymentMethods();
-  }, []);
+  }, [api]);
 
-  /* =======================
-     HELPERS
-  ======================= */
-  const toggleDeliveryType = () =>
-    setDeliveryType((prev) => (prev === "retirada" ? "entrega" : "retirada"));
+  const subtotal = useMemo(() => {
+    return produtos.reduce(
+      (acc, item) => acc + (item.quantidade ?? 0) * item.preco,
+      0
+    );
+  }, [produtos]);
 
-  const total = produtos.reduce(
-    (acc, item) => acc + (item.quantidade ?? 0) * item.preco,
-    0
-  );
+  const taxaEntrega =
+    deliveryType === "entrega" ? estabelecimento?.taxaEntrega ?? 0 : 0;
+  const totalGeral = subtotal + taxaEntrega;
 
   const formatMoney = (value: number) =>
-    value.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
+    value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-  /* =======================
-     ORDER CONFIRM
-  ======================= */
   const handleConfirmOrder = async (
     name: string,
     phone: string,
@@ -95,88 +72,80 @@ export default function FinishOrder() {
       alert("Selecione uma forma de pagamento");
       return;
     }
-
-    if (deliveryType === "entrega" && !usuario.endereco) {
-      alert("Informe o endereço de entrega");
-      return;
-    }
-
     const order: Pedido = {
+      produtos: produtos.map((p) => ({
+        id: p.id,
+        produtoId: p.id,
+        imgUrl: p.imgUrl || "",
+        quantidade: p.quantidade,
+        descricao: p.descricao || "",
+        categoria: p.categoria,
+        preco: p.preco,
+        nome: p.nome,
+      })),
       observacao: obs,
-      MetodoPagamentoId: selectedPaymentMethodId,
+      metodoPagamentoId: selectedPaymentMethodId,
       endereco:
         deliveryType === "entrega"
-          ? (usuario.endereco as Endereco)
-          : "Retirada no local",
-      produtos: produtos.map(
-        (p): pedidoProduto => ({
-          produtoId: p.id,
-          quantidade: p.quantidade,
-        })
-      ),
-      usuario: {
-        nome: name,
-        telefone: phone,
-      },
+          ? (usuario.endereco as EnderecoPedido)
+          : null,
+      usuario: { nome: name, telefone: phone },
     };
 
-    console.log(order);
     try {
-      const res = await api.CreatePedido(order);
-      console.log("Pedido criado:", res.data);
-
+      await api.CreatePedido(order);
+      alert(`Pedido confirmado! Total: ${formatMoney(totalGeral)}`);
       clear();
       setIsConfirmationModalOpen(false);
       setIsOpen(false);
-
-      alert(`Pedido confirmado no valor de ${formatMoney(total)}`);
     } catch (err) {
       console.error("Erro ao criar pedido", err);
-      alert("Erro ao finalizar pedido");
     }
   };
 
-  useEffect(() => {
-    console.log(usuario);
-  }, []);
-
-  /* =======================
-     RENDER
-  ======================= */
+  if (produtos.length === 0 && !isOpen) return null;
 
   return (
-    <div className={isOpen ? styles.confirmationOverlay : ""}>
-      <div className={styles.footer}>
-        <div className={styles.footer}> </div>
-
-        {/* HEADER */}
+    <div className={isOpen ? styles.confirmationOverlay : styles.footer}>
+      <div className={styles.footer_container}>
         <div className={styles.footer_head}>
-          <span className={styles.footer_total}>{formatMoney(total)}</span>
-
+          <div className={styles.footer_info_text}>
+            <span className={styles.footer_total}>
+              {formatMoney(totalGeral)}
+            </span>
+            {deliveryType === "entrega" && (
+              <small style={{ display: "block", fontSize: "10px" }}>
+                + {formatMoney(taxaEntrega)} entrega
+              </small>
+            )}
+          </div>
           <button
             className={styles.footer_cart}
             onClick={() => setIsOpen((p) => !p)}
           >
             {isOpen ? (
-              <X />
+              <X size={24} />
             ) : (
-              <span style={{ display: "flex", gap: "10px" }}>
-                Finalizar
-                <ShoppingCart />
+              <span
+                style={{ display: "flex", gap: "10px", alignItems: "center" }}
+              >
+                Finalizar <ShoppingCart size={15} />
               </span>
             )}
           </button>
         </div>
-        {/* FORM */}
+
         <div className={`${styles.form} ${isOpen ? styles.open : ""}`}>
           <div className={styles.delivery_preferences}>
-            {/* ENTREGA */}
             <div className={styles.section}>
               <h3>Opções de Entrega</h3>
-
               <div
                 className={styles.delivery_row_toggle_container}
-                onClick={toggleDeliveryType}
+                onClick={() =>
+                  setDeliveryType((prev) =>
+                    prev === "entrega" ? "retirada" : "entrega"
+                  )
+                }
               >
                 <div
                   className={`${styles.delivery_row_toggle_left} ${
@@ -185,9 +154,8 @@ export default function FinishOrder() {
                       : ""
                   }`}
                 >
-                  Entrega <Truck />
+                  Entrega <Truck size={16} />
                 </div>
-
                 <div
                   className={`${styles.delivery_row_toggle_right} ${
                     deliveryType === "retirada"
@@ -195,50 +163,35 @@ export default function FinishOrder() {
                       : ""
                   }`}
                 >
-                  Retirada <MapPin />
+                  Retirada <MapPin size={16} />
                 </div>
               </div>
             </div>
 
-            {/* ENDEREÇO */}
             {deliveryType === "entrega" && (
               <div className={styles.section}>
-                <h3>Endereço</h3>
-
+                <h3>Endereço de Entrega</h3>
                 <div className={styles.addressBox}>
                   <div>
-                    <strong>Meu Endereço</strong>
+                    <strong>Localização</strong>
                     <p>
-                      {usuario.endereco.bairro != null
-                        ? `${usuario.endereco.rua}, ${usuario.endereco.numero} - ${usuario.endereco.cidade}/${usuario.endereco.uf}`
-                        : "Nenhum endereço selecionado"}
+                      {usuario.endereco?.rua
+                        ? `${usuario.endereco.rua}, ${usuario.endereco.numero}`
+                        : "Nenhum endereço cadastrado"}
                     </p>
                   </div>
-
                   <button
                     className={styles.changeAddress}
                     onClick={() => setIsAddressModalOpen(true)}
                   >
-                    Alterar
+                    {usuario.endereco?.rua ? "Alterar" : "Cadastrar"}
                   </button>
                 </div>
               </div>
             )}
 
-            <AddressModal
-              isOpen={isAddressModalOpen}
-              onClose={() => setIsAddressModalOpen(false)}
-              initialAddress={usuario.endereco}
-              onSave={(data) => {
-                setIsAddressModalOpen(false);
-                usuario.setEndereco(data);
-              }}
-            />
-
-            {/* PAGAMENTO */}
             <div className={styles.section}>
               <h3>Forma de Pagamento</h3>
-
               <div className={styles.paymentRow}>
                 {paymentMethods.map((method) => (
                   <button
@@ -253,57 +206,91 @@ export default function FinishOrder() {
                 ))}
               </div>
             </div>
-
-            {/* PRODUTOS */}
-            <div className={styles.products_table}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Produto</th>
-                    <th>Qtd</th>
-                    <th>Preço</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {produtos.map((p) => (
-                    <tr key={p.id}>
-                      <td>{p.nome}</td>
-                      <td>{p.quantidade}</td>
-                      <td>{formatMoney(p.preco)}</td>
-                      <td>{formatMoney(p.quantidade * p.preco)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* FINAL */}
+            {/* --- TABELA USANDO AS CLASSES DO SEU CSS --- */}
             <div className={styles.section}>
-              <span className={styles.total}>{formatMoney(total)}</span>
-
+              <h3>Itens do Pedido</h3>
+              <div className={styles.products_table}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Produto</th>
+                      <th className={styles.p_quant}>Qtd</th>
+                      <th className={styles.p_price}>Preço</th>
+                      <th className={styles.p_total}>Total</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {produtos.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.nome}</td>
+                        <td className={styles.p_quant}>{item.quantidade}</td>
+                        <td className={styles.p_price}>
+                          {formatMoney(item.preco)}
+                        </td>
+                        <td className={styles.p_total}>
+                          {formatMoney(item.preco * (item.quantidade || 1))}
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => remove(item)}
+                            style={{
+                              background: "none",
+                              border: "none",
+                              color: "#ff4d4d",
+                              cursor: "pointer",
+                            }}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div className={styles.section}>
+              <div className={styles.total}>
+                <span>Total: {formatMoney(totalGeral)}</span>
+              </div>
               <button
                 className={styles.finishButton}
+                disabled={produtos.length === 0}
                 onClick={() => setIsConfirmationModalOpen(true)}
               >
-                Finalizar Pedido
+                Confirmar Pedido
               </button>
             </div>
           </div>
         </div>
-        {/* CONFIRM MODAL */}
+
         <PopUpModal
           isOpen={isConfirmationModalOpen}
           onClose={() => setIsConfirmationModalOpen(false)}
         >
           <ConfirmationModal
-            total={formatMoney(total)}
-            endereco={usuario.endereco}
-            isOpen
+            total={formatMoney(totalGeral)}
+            endereco={
+              deliveryType === "entrega"
+                ? (usuario.endereco as EnderecoPedido)
+                : null
+            }
+            isOpen={isConfirmationModalOpen}
             onClose={() => setIsConfirmationModalOpen(false)}
             onConfirm={handleConfirmOrder}
           />
         </PopUpModal>
+
+        <AddressModal
+          isOpen={isAddressModalOpen}
+          onClose={() => setIsAddressModalOpen(false)}
+          initialAddress={usuario.endereco}
+          onSave={(data) => {
+            setIsAddressModalOpen(false);
+            usuario.setEndereco(data as EnderecoPedido);
+          }}
+        />
       </div>
     </div>
   );
