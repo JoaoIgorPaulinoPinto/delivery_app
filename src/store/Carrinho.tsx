@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Produto } from "../models/Produto";
+import Produto from "../models/Produto";
 
 type CarrinhoState = {
   produtos: Produto[];

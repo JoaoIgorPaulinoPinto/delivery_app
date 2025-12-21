@@ -1,4 +1,4 @@
-export interface endereco {
+export default interface endereco {
   cep: string;
   uf: string;
   cidade: string;

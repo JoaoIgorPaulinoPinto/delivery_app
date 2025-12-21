@@ -136,6 +136,7 @@ h6 {
   --background-color-3: #242424;
   --background-color-4: #2b2b2b;
   --background-color-5: #1faa59; /* Mantive como cor de destaque */
+  --background-color-7: #ff0000; /* Mantive como cor de destaque */
 
   --text-color-0: #ffffff;
   --text-color-1: #e6e6e6;
@@ -144,6 +145,7 @@ h6 {
   --text-color-4: #cccccc;
   --text-color-5: #1faa59; /* Mantive como destaque verde */
   --text-color-6: #ffffff;
+  --text-color-7: #ffffff;
 
   --def-border: 1px solid rgba(255, 255, 255, 0.1);
 }

@@ -1,15 +1,30 @@
 "use client";
+import banner from "@/public/banner.jpg";
 import FinishOrder from "@/src/components/ui/finish-order/finish-order";
 import ProductCard from "@/src/components/ui/product-card/product-card";
-import { Produto } from "@/src/models/Produto";
+import Produto from "@/src/models/Produto";
 import { API } from "@/src/Services/API";
 import { useCarrinho } from "@/src/store/Carrinho";
 import Image from "next/image";
-import { SetStateAction, useEffect, useState } from "react";
-import banner from "../../../public/banner.jpg";
+import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 
+import { useParams } from "next/navigation";
 export default function Home() {
+  const params = useParams();
+  const slug = params.estabelecimento as string;
+  // Você definiu a função 'f', mas nunca a chamou!
+  useEffect(() => {
+    const f = async () => {
+      const res = await fetch(
+        `http://192.168.1.18:5096/Estabelecimento/slug?=${slug}`
+      );
+      return res;
+    };
+    // f(); <--- Faltou chamar a função aqui para ela rodar
+    console.log(f);
+  }, [slug]); // Adicione 'slug' como dependência
+
   const [selected, setSelected] = useState(0);
   const api = new API();
   const [categories, setCategories] =
@@ -17,12 +32,26 @@ export default function Home() {
 
   const [products, setProducts] = useState<Produto[]>();
   const produtos = useCarrinho((state) => state.produtos);
+
   useEffect(() => {
-    api.setStablishment("pizzaria-do-joao"); //TROCAR PARA SLUG REAL
-    api.getProducts().then((data: SetStateAction<Produto[] | undefined>) => {
-      setProducts(data);
-    });
-    api.GetCategories().then((res) => setCategories(res.data));
+    const fetchData = async () => {
+      try {
+        api.setStablishment("pizzaria-do-joao");
+
+        const [productsData, categoriesRes] = await Promise.all([
+          api.getProducts(),
+          api.GetCategories(),
+        ]);
+
+        setProducts(productsData);
+        setCategories(categoriesRes.data);
+      } catch (error) {
+        console.error("Erro ao carregar dados da API:", error);
+      }
+    };
+
+    fetchData();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

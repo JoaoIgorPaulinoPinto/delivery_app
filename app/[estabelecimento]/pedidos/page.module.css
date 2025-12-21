@@ -1,0 +1,135 @@
+.main {
+  display: flex;
+  justify-content: center;
+  padding: var(--size-md);
+  min-height: 100vh;
+}
+.storeInfo {
+  display: flex;
+  flex-direction: column;
+}
+.card {
+  background-color: var(--background-color-2);
+  border: var(--def-border);
+  border-radius: var(--radius-xs);
+  box-shadow: var(--def-shadow-1);
+  width: 100%;
+  max-width: 450px;
+  padding: var(--size-sm);
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: var(--def-border);
+  padding-bottom: var(--space-lg);
+}
+
+.orderId {
+  font-weight: bold;
+  font-size: var(--font-size-md);
+  color: var(--text-color-1);
+}
+
+.statusBadge {
+  background-color: var(--background-color-4);
+  border: var(--def-border);
+  color: var(--text-color-0);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sl);
+  font-weight: bold;
+}
+.obsSection {
+  font-size: var(--font-size-md);
+}
+
+.body {
+  padding: var(--space-sm) 0;
+}
+
+/* Estilização da Tabela */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-xl) 0;
+  font-size: var(--font-size-md);
+}
+
+.table th {
+  text-align: left;
+  color: var(--text-color-2);
+  font-size: var(--font-size-sl);
+  text-transform: uppercase;
+  padding-bottom: var(--space-md);
+  border-bottom: var(--def-border);
+}
+
+.table td {
+  padding: var(--space-md) 0;
+  color: var(--text-color-1);
+}
+
+.textRight {
+  text-align: right;
+}
+
+.priceContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 2px dashed var(--background-color-3); /* Efeito de cupom */
+}
+
+.price {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--text-color-5);
+}
+
+.footer {
+  text-align: start;
+  flex-direction: column;
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-top: var(--space-xl);
+  border-top: var(--def-border); /* Adicionado para separar as ações */
+  padding-top: var(--space-lg);
+}
+
+.eta {
+  font-size: var(--font-size-sl);
+  color: var(--text-color-2);
+}
+
+.detailButton {
+  background-color: var(--background-color-4);
+  color: var(--text-color-0);
+  border: none;
+  padding: var(--space-md) var(--space-xl);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  font-size: var(--font-size-md);
+  font-weight: bold;
+  transition: opacity 0.2s;
+}
+
+.detailButton:hover {
+  opacity: 0.9;
+}
+.cancelButton {
+  margin-top: 10px;
+  border-radius: var(--radius-sm);
+  background-color: var(--background-color-7);
+  border: none;
+  font-size: var(--font-size-md);
+  color: var(--text-color-0);
+  padding: var(--space-sm);
+}

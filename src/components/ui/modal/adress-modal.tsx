@@ -7,7 +7,7 @@ import styles from "./adress-modal.module.css";
 /* =======================
    TYPES
 ======================= */
-export interface EnderecoData {
+export interface Endereco {
   cep: number;
   uf: string;
   cidade: string;
@@ -20,8 +20,8 @@ export interface EnderecoData {
 interface AddressModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (endereco: EnderecoData) => void;
-  initialAddress?: EnderecoData;
+  onSave: (endereco: Endereco) => void;
+  initialAddress?: Endereco;
 }
 
 /* =======================

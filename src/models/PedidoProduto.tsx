@@ -1,4 +1,4 @@
-export interface pedidoProduto {
+export default interface pedidoProduto {
   produtoId: number;
   quantidade: number;
 }

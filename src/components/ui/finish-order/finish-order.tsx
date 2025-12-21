@@ -3,15 +3,16 @@
 import { MapPin, ShoppingCart, Truck, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { Pedido } from "@/src/models/Pedido";
-import { pedidoProduto } from "@/src/models/PedidoProduto";
+import Pedido from "@/src/models/Pedido";
 import { API } from "@/src/Services/API";
 import { useCarrinho } from "@/src/store/Carrinho";
 
-import AddressModal, { EnderecoData } from "../modal/adress-modal";
+import AddressModal, { Endereco } from "../modal/adress-modal";
 import ConfirmationModal from "../modal/confirmation-modal";
 import PopUpModal from "../modal/pop-up-modal";
 
+import pedidoProduto from "@/src/models/PedidoProduto";
+import { useUsuario } from "@/src/store/Usuario";
 import styles from "./finish-order.module.css";
 
 /* =======================
@@ -27,7 +28,9 @@ type PaymentMethod = {
 ======================= */
 export default function FinishOrder() {
   const api = new API();
-
+  const produtos = useCarrinho((state) => state.produtos);
+  const usuario = useUsuario();
+  const clear = useCarrinho((state) => state.clear);
   /* UI STATES */
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -43,11 +46,8 @@ export default function FinishOrder() {
 
   /* ADDRESS */
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
-  const [address, setAddress] = useState<EnderecoData | undefined>(undefined);
 
   /* CART */
-  const produtos = useCarrinho((state) => state.produtos);
-  const clear = useCarrinho((state) => state.clear);
 
   /* =======================
      EFFECTS
@@ -96,7 +96,7 @@ export default function FinishOrder() {
       return;
     }
 
-    if (deliveryType === "entrega" && !address) {
+    if (deliveryType === "entrega" && !usuario.endereco) {
       alert("Informe o endereço de entrega");
       return;
     }
@@ -106,7 +106,7 @@ export default function FinishOrder() {
       MetodoPagamentoId: selectedPaymentMethodId,
       endereco:
         deliveryType === "entrega"
-          ? (address as EnderecoData)
+          ? (usuario.endereco as Endereco)
           : "Retirada no local",
       produtos: produtos.map(
         (p): pedidoProduto => ({
@@ -136,12 +136,19 @@ export default function FinishOrder() {
     }
   };
 
+  useEffect(() => {
+    console.log(usuario);
+  }, []);
+
   /* =======================
      RENDER
   ======================= */
+
   return (
     <div className={isOpen ? styles.confirmationOverlay : ""}>
       <div className={styles.footer}>
+        <div className={styles.footer}> </div>
+
         {/* HEADER */}
         <div className={styles.footer_head}>
           <span className={styles.footer_total}>{formatMoney(total)}</span>
@@ -150,10 +157,16 @@ export default function FinishOrder() {
             className={styles.footer_cart}
             onClick={() => setIsOpen((p) => !p)}
           >
-            {isOpen ? <X /> : <ShoppingCart />}
+            {isOpen ? (
+              <X />
+            ) : (
+              <span style={{ display: "flex", gap: "10px" }}>
+                Finalizar
+                <ShoppingCart />
+              </span>
+            )}
           </button>
         </div>
-
         {/* FORM */}
         <div className={`${styles.form} ${isOpen ? styles.open : ""}`}>
           <div className={styles.delivery_preferences}>
@@ -196,8 +209,8 @@ export default function FinishOrder() {
                   <div>
                     <strong>Meu Endereço</strong>
                     <p>
-                      {address
-                        ? `${address.rua}, ${address.numero} - ${address.cidade}/${address.uf}`
+                      {usuario.endereco.bairro != null
+                        ? `${usuario.endereco.rua}, ${usuario.endereco.numero} - ${usuario.endereco.cidade}/${usuario.endereco.uf}`
                         : "Nenhum endereço selecionado"}
                     </p>
                   </div>
@@ -215,10 +228,10 @@ export default function FinishOrder() {
             <AddressModal
               isOpen={isAddressModalOpen}
               onClose={() => setIsAddressModalOpen(false)}
-              initialAddress={address}
+              initialAddress={usuario.endereco}
               onSave={(data) => {
-                setAddress(data);
                 setIsAddressModalOpen(false);
+                usuario.setEndereco(data);
               }}
             />
 
@@ -278,7 +291,6 @@ export default function FinishOrder() {
             </div>
           </div>
         </div>
-
         {/* CONFIRM MODAL */}
         <PopUpModal
           isOpen={isConfirmationModalOpen}
@@ -286,7 +298,7 @@ export default function FinishOrder() {
         >
           <ConfirmationModal
             total={formatMoney(total)}
-            endereco={address}
+            endereco={usuario.endereco}
             isOpen
             onClose={() => setIsConfirmationModalOpen(false)}
             onConfirm={handleConfirmOrder}

@@ -1,7 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import { Pedido } from "../models/Pedido";
-import { Produto } from "../models/Produto";
+import Pedido from "../models/Pedido";
+import Produto from "../models/Produto";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,

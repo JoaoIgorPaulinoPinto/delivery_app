@@ -1,11 +1,11 @@
-import { EnderecoData } from "../components/ui/modal/adress-modal";
-import { pedidoProduto } from "./PedidoProduto";
-import { Usuario } from "./Usuario";
+import { Endereco } from "../components/ui/modal/adress-modal";
+import pedidoProduto from "./PedidoProduto";
+import Usuario from "./Usuario";
 
-export interface Pedido {
+export default interface Pedido {
   usuario: Usuario;
   produtos: pedidoProduto[];
   observacao: string;
-  endereco: EnderecoData | string;
+  endereco: Endereco | string;
   MetodoPagamentoId: number;
 }

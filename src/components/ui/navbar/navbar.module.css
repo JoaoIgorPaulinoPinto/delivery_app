@@ -23,6 +23,7 @@
   text-shadow: 0 0 8px black;
 }
 .right_side {
+  gap: 10px;
   display: flex;
   justify-content: end;
 }
