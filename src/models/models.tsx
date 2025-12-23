@@ -29,11 +29,10 @@ export interface UsuarioPedido {
 export interface Pedido {
   id?: number;
   produtos: ProdutoPedido[];
-  endereco: EnderecoPedido | null; // Suporta objeto ou a string "Retirada"
+  endereco: EnderecoPedido | null;
   observacao: string;
   metodoPagamentoId: number;
-  status?: string; // Ex: "Em preparação", "Concluído"
-
+  status?: string;
   usuario: UsuarioPedido;
-  estabelecimento?: Estabelecimento; // Necessário para pegar a taxaEntrega na tela
+  estabelecimento?: Estabelecimento;
 }

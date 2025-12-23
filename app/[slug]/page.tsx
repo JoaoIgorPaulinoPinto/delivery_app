@@ -1,70 +1,89 @@
 "use client";
-import banner from "@/public/banner.jpg";
-import FinishOrder from "@/src/components/ui/finish-order/finish-order";
-import ProductCard from "@/src/components/ui/product-card/product-card";
-import { ProdutoPedido } from "@/src/models/models";
-import { API } from "@/src/Services/API";
-import { useCarrinho } from "@/src/store/Carrinho";
-import {
-  Estabelecimento,
-  useEstabelecimento,
-} from "@/src/store/Estabelecimento";
+// React / Next
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+// Assets
+import banner from "@/public/banner.jpg";
+
+// Components
+import FinishOrder from "@/src/components/ui/finish-order/finish-order";
+import ProductCard from "@/src/components/ui/product-card/product-card";
+
+// Models / Services
+import { ProdutoPedido } from "@/src/models/models";
+import { API } from "@/src/Services/API";
+
+// Stores
+import { useCarrinho } from "@/src/store/Carrinho";
+import { useEstabelecimento } from "@/src/store/Estabelecimento";
+
+// Styles
 import styles from "./page.module.css";
 
 export default function Home() {
   const estabelecimento = useEstabelecimento();
-
+  const clearCart = useCarrinho((state) => state.clear);
   const params = useParams();
   const slug = params.slug as string;
-  const apiInstance = new API();
-
-  const [selected, setSelected] = useState(0);
-  const [categories, setCategories] =
-    useState<{ id: string; nome: string }[]>();
-  const [products, setProducts] = useState<ProdutoPedido[]>();
+  const apiInstance = useMemo(() => new API(), []);
+  const [selected, setSelected] = useState<number | null>();
+  const [categories, setCategories] = useState<{ id: number; nome: string }[]>(
+    []
+  );
+  const [products, setProducts] = useState<ProdutoPedido[]>([]);
   const [loading, setLoading] = useState(true);
 
   const produtosNoCarrinho = useCarrinho((state) => state.produtos);
+  const selectedCategoryId = selected ? categories[selected]?.id : null;
+  const filteredProducts = useMemo(() => {
+    if (!selectedCategoryId) return products;
+    return products.filter((p) => p.id === selectedCategoryId);
+  }, [products, selectedCategoryId]);
+  const loadEstablishment = async (slug: string) => {
+    const data = await apiInstance.setStablishment(slug);
+    estabelecimento.setEstabelecimento(data);
+    return data;
+  };
+
+  const loadProductsAndCategories = async () => {
+    const [productsData, categoriesRes] = await Promise.all([
+      apiInstance.getProducts(),
+      apiInstance.GetCategories(),
+    ]);
+
+    setProducts(productsData);
+    setCategories(categoriesRes.data);
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!slug) return;
+    if (!slug) return;
 
+    const fetchData = async () => {
       try {
         setLoading(true);
-
-        // 1. Obtém os dados do estabelecimento
-        // Note: tipamos como 'any' ou seu tipo 'Estabelecimento' para acessar o .id
-        const establishmentData: Estabelecimento =
-          await apiInstance.setStablishment(slug);
-
-        // Atualiza o store para o restante do app
-        estabelecimento.setEstabelecimento(establishmentData);
-
-        // 2. BUSCA PRODUTOS USANDO A VARIÁVEL LOCAL 'establishmentData'
-        // Não use 'estabelecimento.estabelecimento.id' aqui, pois o Zustand é assíncrono!
-        if (establishmentData && establishmentData.id) {
-          const [productsData, categoriesRes] = await Promise.all([
-            apiInstance.getProducts(),
-            apiInstance.GetCategories(),
-          ]);
-
-          setProducts(productsData);
-          setCategories(categoriesRes.data);
+        const est = await loadEstablishment(slug);
+        if (est?.id) {
+          await loadProductsAndCategories();
         }
-      } catch (error) {
-        console.error("Erro ao carregar dados:", error);
+      } catch (err) {
+        console.error("Erro ao carregar dados", err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [slug]); // Mantenha apenas o slug como dependência
-  if (loading) return <div className={styles.main}>Carregando...</div>;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug]);
+  if (loading) {
+    return (
+      <div className={styles.main}>
+        <p>Carregando cardápio...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.main}>
@@ -74,12 +93,15 @@ export default function Home() {
 
       <div className={styles.filters_line}>
         <div className={styles.filters_line_content}>
-          {categories?.map((c, i) => (
+          {categories?.map((c) => (
             <button
-              key={i}
-              onClick={() => setSelected(i)}
+              key={c.id}
+              onClick={() => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                selected == c.id ? setSelected(null) : setSelected(c.id);
+              }}
               className={
-                selected === i
+                selected === c.id
                   ? `${styles.filters_line_option} ${styles.filters_line_option_selected}`
                   : styles.filters_line_option
               }
@@ -95,18 +117,15 @@ export default function Home() {
           style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
         >
           {produtosNoCarrinho.length > 0 && (
-            <button
-              className={styles.clear_cart_button}
-              onClick={() => useCarrinho.getState().clear()}
-            >
+            <button className={styles.clear_cart_button} onClick={clearCart}>
               Limpar
             </button>
           )}
         </div>
 
-        {products?.map((product, i) => {
-          const p = produtosNoCarrinho.find((item) => item.id === product.id);
-          return <ProductCard key={i} {...(p ?? product)} />;
+        {filteredProducts.map((product) => {
+          const p = produtosNoCarrinho.find((i) => i.id === product.id);
+          return <ProductCard key={product.id} {...(p ?? product)} />;
         })}
       </div>
 
