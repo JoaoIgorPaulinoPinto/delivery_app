@@ -3,7 +3,7 @@
 import { MapPin, ShoppingCart, Trash2, Truck, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { EnderecoPedido, Pedido } from "@/src/models/models";
+import { Pedido } from "@/src/models/models";
 import { API } from "@/src/Services/API";
 import { useCarrinho } from "@/src/store/Carrinho";
 import { useEstabelecimento } from "@/src/store/Estabelecimento";
@@ -85,10 +85,7 @@ export default function FinishOrder() {
       })),
       observacao: obs,
       metodoPagamentoId: selectedPaymentMethodId,
-      endereco:
-        deliveryType === "entrega"
-          ? (usuario.endereco as EnderecoPedido)
-          : null,
+      endereco: deliveryType === "entrega" ? usuario.endereco : null,
       usuario: { nome: name, telefone: phone },
     };
 
@@ -271,11 +268,7 @@ export default function FinishOrder() {
         >
           <ConfirmationModal
             total={formatMoney(totalGeral)}
-            endereco={
-              deliveryType === "entrega"
-                ? (usuario.endereco as EnderecoPedido)
-                : null
-            }
+            endereco={deliveryType === "entrega" ? usuario.endereco : null}
             isOpen={isConfirmationModalOpen}
             onClose={() => setIsConfirmationModalOpen(false)}
             onConfirm={handleConfirmOrder}
@@ -288,7 +281,7 @@ export default function FinishOrder() {
           initialAddress={usuario.endereco}
           onSave={(data) => {
             setIsAddressModalOpen(false);
-            usuario.setEndereco(data as EnderecoPedido);
+            usuario.setEndereco(data);
           }}
         />
       </div>

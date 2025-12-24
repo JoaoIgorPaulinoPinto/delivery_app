@@ -5,11 +5,11 @@ import { EnderecoPedido, UsuarioPedido } from "../models/models";
 // Definimos o estado inicial para reutilizar no reset
 const initialUsuario: UsuarioPedido = { nome: "", telefone: "" };
 const initialEndereco: EnderecoPedido = {
-  cep: 0,
+  cep: "",
   uf: "",
   cidade: "",
   rua: "",
-  numero: 0,
+  numero: "",
   bairro: "",
   complemento: "",
 };

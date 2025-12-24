@@ -14,7 +14,7 @@ api.interceptors.request.use((config) => {
   const estId = Cookies.get("Estabelecimento");
   const clientKey = Cookies.get("clientKey");
   if (estId) {
-    config.headers.estabelecimentoId = estId;
+    config.headers.estabelecimentoId = 1;
   }
   if (clientKey) {
     config.headers.clientKey = clientKey;
@@ -71,20 +71,28 @@ export class API {
     const clientKey = Cookies.get("clientKey");
 
     const pedido = {
+      usuario: order.usuario,
+      endereco: {
+        rua: order.endereco?.rua,
+        numero: String(order.endereco!.numero),
+        bairro: order.endereco!.bairro,
+        cidade: order.endereco!.cidade,
+        uf: order.endereco!.uf,
+        cep: String(order.endereco!.cep),
+        complemento: order.endereco!.complemento,
+      },
       produtos: order.produtos.map((p) => ({
         produtoId: p.id,
         quantidade: p.quantidade,
       })),
-      endereco: order.endereco,
-      observacao: order.observacao,
       metodoPagamentoId: order.metodoPagamentoId,
-      usuario: order.usuario,
+      observacao: order.observacao,
     };
-    const response = await api.post("/Pedido", pedido, {
+    console.log(pedido);
+    const response = await api.post("/Pedido/Criar", pedido, {
       params: { clientKey },
     });
     console.log("Resposta da API: " + response.data);
-    console.log("Resposta da API: " + order);
 
     if (response.data?.pedido?.usuario?.clientKey) {
       Cookies.set("clientKey", response.data.pedido.usuario.clientKey);
@@ -97,7 +105,7 @@ export class API {
     const clientKey = Cookies.get("clientKey");
     console.log("client key " + clientKey);
 
-    const response = await api.get("/Pedido", {
+    const response = await api.get("/Pedido/Cliente", {
       params: {
         clientKey: clientKey ?? null,
       },

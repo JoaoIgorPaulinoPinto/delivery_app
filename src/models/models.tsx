@@ -6,17 +6,16 @@ export interface ProdutoPedido {
   imgUrl: string;
   quantidade: number;
   descricao: string;
-  // Opcional: Incluir nome e preco se o seu backend já fizer o Join
   nome?: string;
   preco: number;
 }
 
 export interface EnderecoPedido {
-  cep: number;
+  cep: string;
   uf: string;
   cidade: string;
   rua: string;
-  numero: number;
+  numero: string;
   bairro: string;
   complemento: string;
 }
@@ -32,7 +31,7 @@ export interface Pedido {
   endereco: EnderecoPedido | null;
   observacao: string;
   metodoPagamentoId: number;
-  status?: string;
+  status?: { id: number; nome: string };
   usuario: UsuarioPedido;
   estabelecimento?: Estabelecimento;
 }

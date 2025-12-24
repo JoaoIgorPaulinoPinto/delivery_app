@@ -1,5 +1,6 @@
 "use client";
 
+import { EnderecoPedido } from "@/src/models/models";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import styles from "./adress-modal.module.css";
@@ -7,21 +8,11 @@ import styles from "./adress-modal.module.css";
 /* =======================
    TYPES
 ======================= */
-export interface Endereco {
-  cep: number;
-  uf: string;
-  cidade: string;
-  rua: string;
-  numero: number;
-  bairro: string;
-  complemento?: string;
-}
-
 interface AddressModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (endereco: Endereco) => void;
-  initialAddress?: Endereco;
+  onSave: (endereco: EnderecoPedido) => void;
+  initialAddress?: EnderecoPedido;
 }
 
 /* =======================
@@ -33,11 +24,11 @@ export default function AddressModal({
   onSave,
   initialAddress,
 }: AddressModalProps) {
-  const [cep, setCep] = useState<number>(0);
+  const [cep, setCep] = useState("");
   const [uf, setUf] = useState("");
   const [cidade, setCidade] = useState("");
   const [rua, setRua] = useState("");
-  const [numero, setNumero] = useState<number>(0);
+  const [numero, setNumero] = useState("");
   const [bairro, setBairro] = useState("");
   const [complemento, setComplemento] = useState("");
 
@@ -99,7 +90,7 @@ export default function AddressModal({
           <input
             type="number"
             value={cep || ""}
-            onChange={(e) => setCep(Number(e.target.value))}
+            onChange={(e) => setCep(e.target.value)}
             placeholder="Ex: 18530000"
           />
         </div>
@@ -120,7 +111,7 @@ export default function AddressModal({
           <input
             type="text"
             value={cidade}
-            onChange={(e) => setCidade(e.target.value)}
+            onChange={(e) => setCidade(String(e.target.value))}
             placeholder="Ex: Tietê"
           />
         </div>
@@ -140,7 +131,7 @@ export default function AddressModal({
           <input
             type="number"
             value={numero || ""}
-            onChange={(e) => setNumero(Number(e.target.value))}
+            onChange={(e) => setNumero(String(e.target.value))}
             placeholder="Ex: 120"
           />
         </div>

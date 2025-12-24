@@ -47,7 +47,7 @@ export default function OrdersPage() {
                 <span className={styles.userName}>{p.usuario.nome}</span>
                 <span className={styles.orderId}>📦 Pedido #{p.id}</span>
               </div>
-              <span className={styles.statusBadge}>{p.status}</span>
+              <span className={styles.statusBadge}>{p.status?.nome}</span>
             </div>
             <div className={styles.body}>
               <table className={styles.table}>
