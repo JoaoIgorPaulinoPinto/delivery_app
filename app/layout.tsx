@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-br" data-theme="dark">
+    <html lang="pt-br" data-theme="soft-dark">
       <body>
         <Navbar />
 

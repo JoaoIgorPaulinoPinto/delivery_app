@@ -8,7 +8,6 @@ import { useEffect, useMemo, useState } from "react";
 import banner from "@/public/banner.jpg";
 
 // Components
-import FinishOrder from "@/src/components/ui/finish-order/finish-order";
 import ProductCard from "@/src/components/ui/product-card/product-card";
 
 // Models / Services
@@ -20,15 +19,15 @@ import { useCarrinho } from "@/src/store/Carrinho";
 import { useEstabelecimento } from "@/src/store/Estabelecimento";
 
 // Styles
+import FinishOrder from "@/src/components/ui/finish-order/finish-order";
 import styles from "./page.module.css";
 
 export default function Home() {
   const estabelecimento = useEstabelecimento();
-  const clearCart = useCarrinho((state) => state.clear);
   const params = useParams();
   const slug = params.slug as string;
   const apiInstance = useMemo(() => new API(), []);
-  const [selected, setSelected] = useState<number | null>();
+  const [selected, setSelected] = useState<number | null>(null);
   const [categories, setCategories] = useState<{ id: number; nome: string }[]>(
     []
   );
@@ -36,11 +35,16 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   const produtosNoCarrinho = useCarrinho((state) => state.produtos);
-  const selectedCategoryId = selected ? categories[selected]?.id : null;
+  const clearCart = useCarrinho((state) => state.clear);
+
+  const selectedCategoryId = selected;
+  const [error, setError] = useState<string | null>(null);
+
   const filteredProducts = useMemo(() => {
     if (!selectedCategoryId) return products;
     return products.filter((p) => p.id === selectedCategoryId);
   }, [products, selectedCategoryId]);
+
   const loadEstablishment = async (slug: string) => {
     const data = await apiInstance.setStablishment(slug);
     estabelecimento.setEstabelecimento(data);
@@ -60,37 +64,46 @@ export default function Home() {
   useEffect(() => {
     if (!slug) return;
 
+    let isMounted = true;
+
     const fetchData = async () => {
       try {
         setLoading(true);
         const est = await loadEstablishment(slug);
-        if (est?.id) {
+        if (est?.id && isMounted) {
           await loadProductsAndCategories();
         }
       } catch (err) {
-        console.error("Erro ao carregar dados", err);
+        setError("Erro ao carregar cardápio");
+        console.error(err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchData();
+
+    return () => {
+      isMounted = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
+
   if (loading) {
     return (
-      <div className={styles.main}>
-        <p>Carregando cardápio...</p>
+      <div className={styles.loadingContainer}>
+        <div className={styles.spinner}></div>
       </div>
     );
   }
-
+  if (error) {
+    return <p>{error}</p>;
+  }
   return (
     <div className={styles.main}>
       <div className={styles.banner}>
         <Image src={banner} alt="banner" fill style={{ objectFit: "cover" }} />
       </div>
-
       <div className={styles.filters_line}>
         <div className={styles.filters_line_content}>
           {categories?.map((c) => (
@@ -111,7 +124,6 @@ export default function Home() {
           ))}
         </div>
       </div>
-
       <div className={styles.products}>
         <div
           style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
@@ -128,7 +140,6 @@ export default function Home() {
           return <ProductCard key={product.id} {...(p ?? product)} />;
         })}
       </div>
-
       <div className={styles.footer}></div>
       <FinishOrder />
     </div>

@@ -1,8 +1,10 @@
 "use client";
-
 import { EnderecoPedido } from "@/src/models/models";
+import { useUsuario } from "@/src/store/Usuario";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { PatternFormat } from "react-number-format";
+
 import styles from "./confirmation-modal.module.css";
 
 interface ConfirmationModalProps {
@@ -20,9 +22,24 @@ export default function ConfirmationModal({
   onClose,
   onConfirm,
 }: ConfirmationModalProps) {
-  const [userName, setUserName] = useState("");
-  const [userPhone, setUserPhone] = useState("");
-  const [obs, setobs] = useState("");
+  const { usuario, setUsuario } = useUsuario();
+
+  const [userName, setUserName] = useState(usuario.nome || "");
+  const [userPhone, setUserPhone] = useState(usuario.telefone || "");
+  const [obs, setObs] = useState("");
+
+  /* =================== PREFILL DO USUÁRIO =================== */
+  const initializedRef = useRef(false);
+
+  useEffect(() => {
+    if (isOpen && !initializedRef.current) {
+      initializedRef.current = true;
+    }
+
+    if (!isOpen) {
+      initializedRef.current = false;
+    }
+  }, [isOpen, usuario]);
 
   if (!isOpen) return null;
 
@@ -31,6 +48,13 @@ export default function ConfirmationModal({
       alert("Preencha seu nome e telefone!");
       return;
     }
+
+    // 💾 Salva os dados do usuário no store (persistente)
+    setUsuario({
+      nome: userName,
+      telefone: userPhone,
+    });
+
     onConfirm(userName, userPhone, obs);
   };
 
@@ -51,14 +75,14 @@ export default function ConfirmationModal({
           <strong>{total}</strong>
         </div>
 
-        <div className={styles.addressBox}>
-          <div className={styles.addressTitle}>Endereço de Entrega</div>
-          <div className={styles.addressText}>
-            {endereco
-              ? `${endereco.rua}, ${endereco.numero} - ${endereco.cidade}/${endereco.uf}`
-              : "Nenhum endereço selecionado"}
+        {endereco && (
+          <div className={styles.addressBox}>
+            <div className={styles.addressTitle}>Endereço de Entrega</div>
+            <div className={styles.addressText}>
+              {`${endereco.rua}, ${endereco.numero} - ${endereco.cidade}/${endereco.uf}`}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className={styles.modalInputGroup}>
           <label>Seu Nome</label>
@@ -72,19 +96,22 @@ export default function ConfirmationModal({
 
         <div className={styles.modalInputGroup}>
           <label>Telefone (WhatsApp)</label>
-          <input
-            type="tel"
+          <PatternFormat
+            format="(##) #####-####"
+            mask="_"
             value={userPhone}
-            onChange={(e) => setUserPhone(e.target.value)}
-            placeholder="(99) 99999-9999"
+            onValueChange={(values) => {
+              setUserPhone(values.formattedValue); // só números
+            }}
           />
         </div>
+
         <div className={styles.modalInputGroup}>
           <label>Observação</label>
           <input
             type="text"
             value={obs}
-            onChange={(e) => setobs(e.target.value)}
+            onChange={(e) => setObs(e.target.value)}
             placeholder="Sem cebola, por favor!"
           />
         </div>
@@ -93,6 +120,7 @@ export default function ConfirmationModal({
           ⚠️ Confira seus dados antes de confirmar. Seu pedido será enviado após
           clicar em <b>Confirmar Pedido</b>.
         </div>
+
         <button
           className={styles.modalConfirmButton}
           onClick={handleConfirmOrder}

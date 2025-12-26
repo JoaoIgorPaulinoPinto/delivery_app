@@ -28,8 +28,6 @@
   height: var(--size-xxl);
   color: var(--text-color-0);
   font-size: var(--font-size-xxl);
-  padding-left: var(--space-lg);
-  padding-right: var(--space-lg);
 }
 
 .footer_total {
@@ -66,6 +64,7 @@
 .open {
   max-height: 70vh;
   overflow-y: auto;
+  width: 100vw;
 }
 
 .section {
@@ -250,6 +249,10 @@
 .table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: 10px;
+}
+.table table {
+  border-radius: 30px;
 }
 
 /* Header fixo */
@@ -266,8 +269,6 @@
 
 /* Linhas */
 .table tbody tr {
-  background: var(--background-color-3);
-  border-radius: var(--radius-xs);
   font-size: var(--font-size-sl);
 }
 
@@ -281,6 +282,27 @@
 .p_price,
 .p_total {
   text-align: center;
+}
+.resumeRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-md);
+  color: var(--text-color-1);
+  margin-bottom: var(--space-xs);
+}
+
+.resumeTotal {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xlg);
+  font-weight: bold;
+  color: var(--background-color-5);
+  margin-top: var(--space-sm);
+}
+.removeButton {
+  color: red;
+  border: none;
+  background-color: #ffffff00;
 }
 
 @media (max-width: 380px) {
@@ -308,5 +330,7 @@
   .finishButton {
     padding: 12px;
     font-size: var(--font-size-lg);
+    margin-bottom: 20px;
+    background-color: var(--background-color-5);
   }
 }

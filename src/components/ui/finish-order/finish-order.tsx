@@ -19,15 +19,26 @@ type PaymentMethod = {
   nome: string;
 };
 
+const formatMoney = (value: number) =>
+  value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
 export default function FinishOrder() {
   const api = useMemo(() => new API(), []);
+
   const produtos = useCarrinho((state) => state.produtos);
-  const { remove, clear } = useCarrinho();
+  const remove = useCarrinho((state) => state.remove);
+  const clear = useCarrinho((state) => state.clear);
+
   const usuario = useUsuario();
   const { estabelecimento } = useEstabelecimento();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+
   const [deliveryType, setDeliveryType] = useState<"retirada" | "entrega">(
     "retirada"
   );
@@ -35,7 +46,9 @@ export default function FinishOrder() {
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
     number | null
   >(null);
-  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const enderecoPedido =
+    deliveryType === "entrega" ? usuario.endereco : estabelecimento!.endereco;
+  /* ===================== EFFECTS ===================== */
 
   useEffect(() => {
     const fetchPaymentMethods = async () => {
@@ -46,8 +59,11 @@ export default function FinishOrder() {
         console.error("Erro ao buscar métodos de pagamento", err);
       }
     };
+
     fetchPaymentMethods();
   }, [api]);
+
+  /* ===================== MEMOS ===================== */
 
   const subtotal = useMemo(() => {
     return produtos.reduce(
@@ -58,20 +74,35 @@ export default function FinishOrder() {
 
   const taxaEntrega =
     deliveryType === "entrega" ? estabelecimento?.taxaEntrega ?? 0 : 0;
+
   const totalGeral = subtotal + taxaEntrega;
 
-  const formatMoney = (value: number) =>
-    value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  /* ===================== HANDLERS ===================== */
+
+  const toggleDeliveryType = () => {
+    setDeliveryType((prev) => (prev === "entrega" ? "retirada" : "entrega"));
+  };
 
   const handleConfirmOrder = async (
     name: string,
     phone: string,
     obs: string
   ) => {
+    if (produtos.length === 0) {
+      alert("Carrinho vazio");
+      return;
+    }
+
     if (!selectedPaymentMethodId) {
       alert("Selecione uma forma de pagamento");
       return;
     }
+
+    if (deliveryType === "entrega" && !usuario.endereco) {
+      alert("Informe um endereço de entrega");
+      return;
+    }
+
     const order: Pedido = {
       produtos: produtos.map((p) => ({
         id: p.id,
@@ -85,37 +116,44 @@ export default function FinishOrder() {
       })),
       observacao: obs,
       metodoPagamentoId: selectedPaymentMethodId,
-      endereco: deliveryType === "entrega" ? usuario.endereco : null,
-      usuario: { nome: name, telefone: phone },
+      endereco: enderecoPedido,
+      usuario: {
+        nome: name,
+        telefone: phone,
+      },
     };
 
     try {
       await api.CreatePedido(order);
-      alert(`Pedido confirmado! Total: ${formatMoney(totalGeral)}`);
       clear();
       setIsConfirmationModalOpen(false);
       setIsOpen(false);
+      alert(`Pedido confirmado! Total: ${formatMoney(totalGeral)}`);
     } catch (err) {
       console.error("Erro ao criar pedido", err);
     }
   };
+
+  /* ===================== RENDER ===================== */
 
   if (produtos.length === 0 && !isOpen) return null;
 
   return (
     <div className={isOpen ? styles.confirmationOverlay : styles.footer}>
       <div className={styles.footer_container}>
+        {/* HEADER */}
         <div className={styles.footer_head}>
           <div className={styles.footer_info_text}>
             <span className={styles.footer_total}>
               {formatMoney(totalGeral)}
             </span>
             {deliveryType === "entrega" && (
-              <small style={{ display: "block", fontSize: "10px" }}>
+              <small className={styles.deliveryTax}>
                 + {formatMoney(taxaEntrega)} entrega
               </small>
             )}
           </div>
+
           <button
             className={styles.footer_cart}
             onClick={() => setIsOpen((p) => !p)}
@@ -123,145 +161,146 @@ export default function FinishOrder() {
             {isOpen ? (
               <X size={24} />
             ) : (
-              <span
-                style={{ display: "flex", gap: "10px", alignItems: "center" }}
-              >
+              <>
                 Finalizar <ShoppingCart size={15} />
-              </span>
+              </>
             )}
           </button>
         </div>
 
+        {/* FORM */}
         <div className={`${styles.form} ${isOpen ? styles.open : ""}`}>
-          <div className={styles.delivery_preferences}>
-            <div className={styles.section}>
-              <h3>Opções de Entrega</h3>
+          <div className={styles.section}>
+            <h3>Opções de Entrega</h3>
+            <div
+              className={styles.delivery_row_toggle_container}
+              onClick={toggleDeliveryType}
+            >
               <div
-                className={styles.delivery_row_toggle_container}
-                onClick={() =>
-                  setDeliveryType((prev) =>
-                    prev === "entrega" ? "retirada" : "entrega"
-                  )
-                }
+                className={`${styles.delivery_row_toggle_left} ${
+                  deliveryType === "entrega"
+                    ? styles.delivery_row_toggle_selected
+                    : ""
+                }`}
               >
-                <div
-                  className={`${styles.delivery_row_toggle_left} ${
-                    deliveryType === "entrega"
-                      ? styles.delivery_row_toggle_selected
-                      : ""
-                  }`}
-                >
-                  Entrega <Truck size={16} />
-                </div>
-                <div
-                  className={`${styles.delivery_row_toggle_right} ${
-                    deliveryType === "retirada"
-                      ? styles.delivery_row_toggle_selected
-                      : ""
-                  }`}
-                >
-                  Retirada <MapPin size={16} />
-                </div>
+                Entrega <Truck size={16} />
+              </div>
+              <div
+                className={`${styles.delivery_row_toggle_right} ${
+                  deliveryType === "retirada"
+                    ? styles.delivery_row_toggle_selected
+                    : ""
+                }`}
+              >
+                Retirada <MapPin size={16} />
               </div>
             </div>
-
-            {deliveryType === "entrega" && (
-              <div className={styles.section}>
-                <h3>Endereço de Entrega</h3>
-                <div className={styles.addressBox}>
-                  <div>
-                    <strong>Localização</strong>
-                    <p>
-                      {usuario.endereco?.rua
-                        ? `${usuario.endereco.rua}, ${usuario.endereco.numero}`
-                        : "Nenhum endereço cadastrado"}
-                    </p>
-                  </div>
+          </div>
+          <div className={styles.section}>
+            <h3>Endereço</h3>
+            <div className={styles.addressBox}>
+              {deliveryType === "entrega" ? (
+                <>
+                  <p>
+                    {usuario.endereco?.rua ? (
+                      <p>
+                        {usuario!.endereco.rua},{usuario!.endereco.numero} -{" "}
+                        {usuario!.endereco.cidade}/{usuario!.endereco.uf}
+                      </p>
+                    ) : (
+                      "Nenhum endereço cadastrado"
+                    )}
+                  </p>
                   <button
                     className={styles.changeAddress}
                     onClick={() => setIsAddressModalOpen(true)}
                   >
-                    {usuario.endereco?.rua ? "Alterar" : "Cadastrar"}
+                    {usuario.endereco ? "Alterar" : "Cadastrar"}
                   </button>
-                </div>
+                </>
+              ) : (
+                <p>
+                  {estabelecimento!.endereco.rua},
+                  {estabelecimento!.endereco.numero} -{" "}
+                  {estabelecimento!.endereco.cidade}/
+                  {estabelecimento!.endereco.uf}
+                </p>
+              )}
+            </div>
+          </div>
+          <div className={styles.section}>
+            <h3>Forma de Pagamento</h3>
+            <div className={styles.paymentRow}>
+              {paymentMethods.map((method) => (
+                <button
+                  key={method.id}
+                  className={`${styles.paymentButton} ${
+                    selectedPaymentMethodId === method.id ? styles.active : ""
+                  }`}
+                  onClick={() => setSelectedPaymentMethodId(method.id)}
+                >
+                  {method.nome}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className={styles.section}>
+            <h3>Itens do Pedido</h3>
+            <table className={styles.table}>
+              <tbody>
+                {produtos.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.nome}</td>
+                    <td className={styles.p_quant}>{item.quantidade}</td>
+                    <td className={styles.p_price}>
+                      {formatMoney(item.preco)}
+                    </td>
+                    <td className={styles.p_total}>
+                      {formatMoney(item.preco * (item.quantidade || 1))}
+                    </td>
+                    <td>
+                      <button
+                        className={styles.removeButton}
+                        onClick={() => remove(item)}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className={styles.section}>
+            <h3>Resumo</h3>
+
+            <div className={styles.resumeRow}>
+              <span>Subtotal</span>
+              <strong>{formatMoney(subtotal)}</strong>
+            </div>
+
+            {deliveryType === "entrega" && (
+              <div className={styles.resumeRow}>
+                <span>Frete</span>
+                <strong>{formatMoney(taxaEntrega)}</strong>
               </div>
             )}
 
-            <div className={styles.section}>
-              <h3>Forma de Pagamento</h3>
-              <div className={styles.paymentRow}>
-                {paymentMethods.map((method) => (
-                  <button
-                    key={method.id}
-                    className={`${styles.paymentButton} ${
-                      selectedPaymentMethodId === method.id ? styles.active : ""
-                    }`}
-                    onClick={() => setSelectedPaymentMethodId(method.id)}
-                  >
-                    {method.nome}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {/* --- TABELA USANDO AS CLASSES DO SEU CSS --- */}
-            <div className={styles.section}>
-              <h3>Itens do Pedido</h3>
-              <div className={styles.products_table}>
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>Produto</th>
-                      <th className={styles.p_quant}>Qtd</th>
-                      <th className={styles.p_price}>Preço</th>
-                      <th className={styles.p_total}>Total</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {produtos.map((item, index) => (
-                      <tr key={index}>
-                        <td>{item.nome}</td>
-                        <td className={styles.p_quant}>{item.quantidade}</td>
-                        <td className={styles.p_price}>
-                          {formatMoney(item.preco)}
-                        </td>
-                        <td className={styles.p_total}>
-                          {formatMoney(item.preco * (item.quantidade || 1))}
-                        </td>
-                        <td>
-                          <button
-                            onClick={() => remove(item)}
-                            style={{
-                              background: "none",
-                              border: "none",
-                              color: "#ff4d4d",
-                              cursor: "pointer",
-                            }}
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div className={styles.section}>
-              <div className={styles.total}>
-                <span>Total: {formatMoney(totalGeral)}</span>
-              </div>
-              <button
-                className={styles.finishButton}
-                disabled={produtos.length === 0}
-                onClick={() => setIsConfirmationModalOpen(true)}
-              >
-                Confirmar Pedido
-              </button>
+            <div className={styles.resumeTotal}>
+              <span>Total</span>
+              <strong>{formatMoney(totalGeral)}</strong>
             </div>
           </div>
+          <button
+            className={styles.finishButton}
+            onClick={() => setIsConfirmationModalOpen(true)}
+          >
+            Confirmar Pedido
+          </button>
         </div>
 
+        {/* MODALS */}
         <PopUpModal
           isOpen={isConfirmationModalOpen}
           onClose={() => setIsConfirmationModalOpen(false)}
@@ -280,8 +319,8 @@ export default function FinishOrder() {
           onClose={() => setIsAddressModalOpen(false)}
           initialAddress={usuario.endereco}
           onSave={(data) => {
-            setIsAddressModalOpen(false);
             usuario.setEndereco(data);
+            setIsAddressModalOpen(false);
           }}
         />
       </div>

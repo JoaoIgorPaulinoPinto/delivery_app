@@ -1,27 +1,61 @@
 "use client";
+
 import { useEstabelecimento } from "@/src/store/Estabelecimento";
 import { Hamburger, Settings } from "lucide-react";
-import { useParams, useRouter } from "next/navigation"; // ✅ usar navigation no App Router
+import { useParams, useRouter } from "next/navigation";
 import styles from "./navbar.module.css";
 
 export default function Navbar() {
   const router = useRouter();
-  const estabelecimento = useEstabelecimento();
-  const params = useParams();
+  const params = useParams<{ slug: string }>();
+  const slug = params?.slug;
+
+  const nomeFantasia = useEstabelecimento(
+    (state) => state.estabelecimento?.nomeFantasia
+  );
+
+  const handleGoHome = () => {
+    if (!slug) return;
+    router.push(`/${slug}`);
+  };
+
+  const handleGoToOrders = () => {
+    if (!slug) return;
+    router.push(`/${slug}/pedidos`);
+  };
+
+  const handleGoToSettings = () => {
+    if (!slug) return;
+    router.push(`/${slug}/configuracoes`);
+  };
+
   return (
-    <div className={styles.navbar}>
-      <div
+    <nav className={styles.navbar}>
+      <button
         className={styles.left_side}
-        onClick={() => router.replace(`/${params.slug}/`)}
+        onClick={handleGoHome}
+        aria-label="Página inicial"
       >
-        {estabelecimento
-          ? estabelecimento.estabelecimento?.nomeFantasia
-          : "Inicio"}
-      </div>
+        {nomeFantasia ?? "Início"}
+      </button>
+
       <div className={styles.right_side}>
-        <Hamburger onClick={() => router.replace(`/${params.slug}/pedidos`)} />
-        <Settings color="white" />
+        <button
+          aria-label="Pedidos"
+          onClick={handleGoToOrders}
+          className={styles.iconButton}
+        >
+          <Hamburger />
+        </button>
+
+        <button
+          aria-label="Configurações"
+          onClick={handleGoToSettings}
+          className={styles.iconButton}
+        >
+          <Settings />
+        </button>
       </div>
-    </div>
+    </nav>
   );
 }

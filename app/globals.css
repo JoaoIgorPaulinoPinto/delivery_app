@@ -86,9 +86,9 @@ h6 {
   --background-color-1: #dbdbdb;
   --background-color-2: #fefefe;
   --background-color-3: #e4e4e4;
-  --background-color-4: #242424;
+  --background-color-4: #f78923
   --background-color-5: #1faa59;
-  --background-color-6: #242424;
+  --background-color-6: #f78923;
 
   --text-color-0: #fff;
   --text-color-1: #161616;
@@ -150,6 +150,22 @@ h6 {
   --def-border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+:root[data-theme="soft-dark"] {
+  --background-color-1: #202124;
+  --background-color-2: #2a2b2e;
+  --background-color-3: #303134;
+  --background-color-4: #3c4043;
+  --background-color-5: #34a853;
+  --background-color-6: #1f1f1f;
+
+  --text-color-0: #e8eaed;
+  --text-color-1: #e8eaed;
+  --text-color-2: #9aa0a6;
+  --text-color-3: #f9ab00;
+  --text-color-4: #bdc1c6;
+  --text-color-5: #34a853;
+  --text-color-6: #e8eaed;
+}
 body {
   background: var(--background-color-1);
   color: var(--text-color-1);

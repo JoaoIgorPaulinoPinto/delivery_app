@@ -1,18 +1,8 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { EnderecoPedido } from "../models/models";
 
 // Interfaces baseadas no seu Schema
-interface EnderecoEstabelecimento {
-  id: number;
-  cep: number;
-  uf: string;
-  cidade: string;
-  rua: string;
-  numero: number;
-  bairro: string;
-  complemento: string;
-}
-
 interface StatusEstabelecimento {
   id: number;
   nome: string;
@@ -25,7 +15,7 @@ export interface Estabelecimento {
   telefone: string;
   email: string;
   whatsapp: string;
-  endereco: EnderecoEstabelecimento;
+  endereco: EnderecoPedido;
   abertura: string;
   fechamento: string;
   taxaEntrega: number;
