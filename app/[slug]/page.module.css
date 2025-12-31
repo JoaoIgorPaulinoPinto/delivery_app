@@ -74,16 +74,16 @@
 }
 .filters_line_option {
   color: var(--text-color-1);
-  min-width: 100px;
   font-size: small;
   border-radius: var(--radius-md);
   padding: var(--space-sm);
   background-color: var(--background-color-2);
   border: var(--def-border);
   box-shadow: var(--def-shadow-1);
+  padding: var(--space-md) var(--space-xl);
 }
 .filters_line_option_selected {
-  border: 2px solid var(--text-color-1) !important;
+  border: 2px solid var(--text-color-3) !important;
 }
 .clear_cart_button {
   display: flex;
@@ -100,19 +100,36 @@
   letter-spacing: 1px;
 }
 
-.search_bar {
-  width: 90%;
+.search_settings {
   display: flex;
-  align-self: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  width: 90%;
+  align-self: center;
   margin: 10px 10px;
 }
-.search_bar input {
-  width: 100%;
-  padding: var(--space-xs) var(--space-xl);
+
+.search_bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  align-self: center;
   background-color: var(--background-color-2);
-  border: var(--def-border);
-  box-shadow: var(--def-shadow-1);
   border-radius: var(--radius-sm);
+  border: var(--def-border);
+  padding: var(--space-lg);
+  padding-top: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+  box-shadow: var(--def-shadow-1);
+}
+.search_bar input {
+  padding: var(--space-md);
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  box-shadow: var(--def-shadow-1);
   color: var(--text-color-2);
   font-size: var(--font-size-md);
 }

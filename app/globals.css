@@ -166,6 +166,22 @@ h6 {
   --text-color-5: #34a853;
   --text-color-6: #e8eaed;
 }
+:root[data-theme="soft-dark"] {
+  --background-color-1: #202124;
+  --background-color-2: #2a2b2e;
+  --background-color-3: #303134;
+  --background-color-4: #3c4043;
+  --background-color-5: #34a853;
+  --background-color-6: #1f1f1f;
+
+  --text-color-0: #e8eaed;
+  --text-color-1: #e8eaed;
+  --text-color-2: #9aa0a6;
+  --text-color-3: #f9ab00;
+  --text-color-4: #bdc1c6;
+  --text-color-5: #34a853;
+  --text-color-6: #e8eaed;
+}
 body {
   background: var(--background-color-1);
   color: var(--text-color-1);

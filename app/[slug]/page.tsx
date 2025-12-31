@@ -20,6 +20,7 @@ import { useEstabelecimento } from "@/src/store/Estabelecimento";
 
 // Styles
 import FinishOrder from "@/src/components/ui/finish-order/finish-order";
+import { Search, Settings2 } from "lucide-react";
 import styles from "./page.module.css";
 
 export default function Home() {
@@ -124,6 +125,14 @@ export default function Home() {
           ))}
         </div>
       </div>
+      <div className={styles.search_settings}>
+        <div className={styles.search_bar}>
+          <Search size={16} />
+          <input type="text" placeholder="Buscar produtos..." name="" id="" />
+        </div>
+        <Settings2 size={24} />
+      </div>
+
       <div className={styles.products}>
         <div
           style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}

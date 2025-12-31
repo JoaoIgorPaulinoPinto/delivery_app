@@ -201,7 +201,7 @@ export default function FinishOrder() {
             <div className={styles.addressBox}>
               {deliveryType === "entrega" ? (
                 <>
-                  <p>
+                  <label>
                     {usuario.endereco?.rua ? (
                       <p>
                         {usuario!.endereco.rua},{usuario!.endereco.numero} -{" "}
@@ -210,7 +210,7 @@ export default function FinishOrder() {
                     ) : (
                       "Nenhum endereço cadastrado"
                     )}
-                  </p>
+                  </label>
                   <button
                     className={styles.changeAddress}
                     onClick={() => setIsAddressModalOpen(true)}

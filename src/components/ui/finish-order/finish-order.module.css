@@ -219,12 +219,12 @@
 .finishButton {
   width: 100%;
   padding: var(--size-sm);
-  background: var(--background-color-4);
   color: var(--text-color-0);
   border: none;
   border-radius: var(--radius-xs);
   font-size: var(--font-size-lg);
   font-weight: bold;
+  background-color: var(--background-color-5);
 }
 .products_table {
   margin-bottom: var(--space-md);
@@ -250,6 +250,7 @@
   width: 100%;
   border-collapse: collapse;
   border-radius: 10px;
+  background-color: var(--background-color-2);
 }
 .table table {
   border-radius: 30px;
@@ -260,7 +261,6 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--background-color-3);
   padding: 6px var(--space-lg);
   text-align: left;
   font-size: var(--font-size-md);
@@ -302,7 +302,8 @@
 .removeButton {
   color: red;
   border: none;
-  background-color: #ffffff00;
+  background: transparent;
+  cursor: pointer;
 }
 
 @media (max-width: 380px) {
@@ -331,6 +332,5 @@
     padding: 12px;
     font-size: var(--font-size-lg);
     margin-bottom: 20px;
-    background-color: var(--background-color-5);
   }
 }
