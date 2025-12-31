@@ -40,12 +40,23 @@ export default function Home() {
 
   const selectedCategoryId = selected;
   const [error, setError] = useState<string | null>(null);
-
+  const [searchTerm, setSearchTerm] = useState("");
+  // Unifica busca por texto e filtro por categoria
   const filteredProducts = useMemo(() => {
-    if (!selectedCategoryId) return products;
-    return products.filter((p) => p.id === selectedCategoryId);
-  }, [products, selectedCategoryId]);
+    return products.filter((product) => {
+      // Se não houver categoria selecionada, matchesCategory é true para todos
+      const matchesCategory = selected
+        ? product.categoria.id === selected
+        : true;
 
+      // Se searchTerm estiver vazio, matchesSearch será true para todos (ou use uma string vazia como fallback)
+      const matchesSearch = product.nome
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase().trim());
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [products, selected, searchTerm]);
   const loadEstablishment = async (slug: string) => {
     const data = await apiInstance.setStablishment(slug);
     estabelecimento.setEstabelecimento(data);
@@ -128,7 +139,14 @@ export default function Home() {
       <div className={styles.search_settings}>
         <div className={styles.search_bar}>
           <Search size={16} />
-          <input type="text" placeholder="Buscar produtos..." name="" id="" />
+          <input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            type="text"
+            placeholder="Buscar produtos..."
+            name=""
+            id=""
+          />
         </div>
         <Settings2 size={24} />
       </div>

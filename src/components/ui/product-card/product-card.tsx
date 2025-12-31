@@ -19,6 +19,7 @@ export default function ProductCard(product: ProdutoPedido) {
         <div className={styles.product_info}>
           <h3>{product.nome}</h3>
           <p>{product.descricao}</p>
+          <p>{product.categoria.nome}</p>
           <span className={styles.price}>
             R$ {product.preco.toFixed(2).replace(".", ",")}
           </span>
