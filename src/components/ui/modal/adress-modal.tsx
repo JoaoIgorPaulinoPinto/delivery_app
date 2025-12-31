@@ -3,6 +3,7 @@
 import { EnderecoPedido } from "@/src/models/models";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { PatternFormat } from "react-number-format";
 import styles from "./adress-modal.module.css";
 
 /* =======================
@@ -87,10 +88,13 @@ export default function AddressModal({
 
         <div className={styles.modalInputGroup}>
           <label>CEP *</label>
-          <input
-            type="number"
-            value={cep || ""}
-            onChange={(e) => setCep(e.target.value)}
+          <PatternFormat
+            format="##.###-###"
+            mask="_"
+            value={cep}
+            onValueChange={(values) => {
+              setCep(values.value);
+            }}
             placeholder="Ex: 18530000"
           />
         </div>
@@ -101,7 +105,7 @@ export default function AddressModal({
             type="text"
             value={uf}
             maxLength={2}
-            onChange={(e) => setUf(e.target.value.toUpperCase())}
+            onChange={(e) => setUf(String(e.target.value))}
             placeholder="Ex: SP"
           />
         </div>

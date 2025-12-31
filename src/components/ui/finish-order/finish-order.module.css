@@ -262,7 +262,7 @@
   top: 0;
   z-index: 10;
   padding: 6px var(--space-lg);
-  text-align: left;
+  text-align: center;
   font-size: var(--font-size-md);
   color: var(--text-color-1);
 }

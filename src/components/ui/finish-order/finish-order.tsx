@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, ShoppingCart, Trash2, Truck, X } from "lucide-react";
+import { MapPin, ShoppingCart, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Pedido } from "@/src/models/models";
@@ -186,7 +186,7 @@ export default function FinishOrder({
             onClick={() => setIsOpen((p) => !p)}
           >
             {isOpen ? (
-              <X size={24} />
+              "Voltar"
             ) : (
               <>
                 Finalizar <ShoppingCart size={15} />
@@ -274,6 +274,12 @@ export default function FinishOrder({
           <div className={styles.section}>
             <h3>Itens do Pedido</h3>
             <table className={styles.table}>
+              <thead>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Preço</th>
+                <th>Valor</th>
+              </thead>
               <tbody>
                 {produtos.map((item) => (
                   <tr key={item.id}>
@@ -284,14 +290,6 @@ export default function FinishOrder({
                     </td>
                     <td className={styles.p_total}>
                       {formatMoney(item.preco * (item.quantidade || 1))}
-                    </td>
-                    <td>
-                      <button
-                        className={styles.removeButton}
-                        onClick={() => remove(item)}
-                      >
-                        <Trash2 size={16} />
-                      </button>
                     </td>
                   </tr>
                 ))}

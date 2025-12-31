@@ -1,7 +1,7 @@
 "use client";
 
 import { useEstabelecimento } from "@/src/store/Estabelecimento";
-import { Clock, Hamburger, InfoIcon, MapPin, Settings } from "lucide-react";
+import { Clock, InfoIcon, MapPin, ShoppingBasket } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./navbar.module.css";
@@ -147,16 +147,16 @@ export default function Navbar() {
           onClick={handleGoToOrders}
           className={styles.iconButton}
         >
-          <Hamburger size={20} />
+          <ShoppingBasket size={20} />
         </button>
 
-        <button
+        {/* <button
           aria-label="Configurações"
           onClick={handleGoToSettings}
           className={styles.iconButton}
         >
           <Settings size={20} />
-        </button>
+        </button> */}
       </div>
 
       {open && (

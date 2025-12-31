@@ -101,7 +101,7 @@ export default function ConfirmationModal({
             mask="_"
             value={userPhone}
             onValueChange={(values) => {
-              setUserPhone(values.formattedValue); // só números
+              setUserPhone(values.value); // só números
             }}
           />
         </div>
