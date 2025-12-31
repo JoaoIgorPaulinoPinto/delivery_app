@@ -11,11 +11,8 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const estId = Cookies.get("Estabelecimento");
   const clientKey = Cookies.get("clientKey");
-  if (estId) {
-    config.headers.estabelecimentoId = 1;
-  }
+
   if (clientKey) {
     config.headers.clientKey = clientKey;
   }
@@ -23,16 +20,26 @@ api.interceptors.request.use((config) => {
 });
 
 export class API {
-  public async setStablishment(slug: string): Promise<Estabelecimento> {
-    const response = await api.get("/Estabelecimento", {
-      params: { slug },
-    });
+  public async setStablishment(slug: string): Promise<Estabelecimento | null> {
+    try {
+      const response = await api.get("/Estabelecimento", {
+        params: { slug },
+      });
 
-    const dados: Estabelecimento = response.data;
+      const dados: Estabelecimento = response.data;
 
-    Cookies.set("Estabelecimento", dados.id.toString());
+      if (dados) {
+        // Use dados.slug se for string, ou garanta a conversão
+        Cookies.set("Estabelecimento", String(dados.slug));
+        return dados;
+      }
 
-    return dados;
+      return null;
+    } catch (error: unknown) {
+      // Se a API retornar 404 ou 500 porque o slug não existe
+      console.error("Erro ao buscar estabelecimento:", error);
+      return null;
+    }
   }
 
   public async getStablishment(slug: string): Promise<Estabelecimento> {
@@ -42,10 +49,12 @@ export class API {
     return response.data;
   }
 
-  public async getProducts(): Promise<ProdutoPedido[]> {
-    const response = await api.get("/Produto");
-
-    console.log("REPOSTA DA API: " + response.data);
+  public async getProducts(slug: string): Promise<ProdutoPedido[]> {
+    const response = await api.get("/Produto", {
+      headers: {
+        slug: slug,
+      },
+    });
     return response.data.map(
       (item: ProdutoPedido): ProdutoPedido => ({
         id: item.id,
@@ -59,15 +68,23 @@ export class API {
     );
   }
 
-  public async GetCategories() {
-    return await api.get("/Categoria");
+  public async GetCategories(slug: string) {
+    return await api.get("/Categoria", {
+      headers: {
+        slug: slug,
+      },
+    });
   }
 
-  public async GetPaymentMeth() {
-    return await api.get("/MetodoPagamento");
+  public async GetPaymentMeth(slug: string) {
+    return await api.get("/MetodoPagamento", {
+      headers: {
+        slug: slug,
+      },
+    });
   }
 
-  public async CreatePedido(order: Pedido) {
+  public async CreatePedido(order: Pedido, slug: string) {
     const clientKey = Cookies.get("clientKey");
 
     const pedido = {
@@ -86,31 +103,35 @@ export class API {
         quantidade: p.quantidade,
       })),
       metodoPagamentoId: order.metodoPagamentoId,
-      observacao: order.observacao,
+      observacao: order.observacao || "",
     };
-    console.log(pedido);
     const response = await api.post("/Pedido/Criar", pedido, {
-      params: { clientKey },
+      headers: {
+        slug: slug,
+      },
+      params: { clientKey: clientKey ?? null },
     });
-    console.log("Resposta da API: " + response.data);
 
     if (response.data?.pedido?.usuario?.clientKey) {
       Cookies.set("clientKey", response.data.pedido.usuario.clientKey);
     }
-
     return response;
   }
 
-  public async getPedidos() {
+  public async getPedidos(slug: string): Promise<Pedido[]> {
     const clientKey = Cookies.get("clientKey");
-    console.log("client key " + clientKey);
-
-    const response = await api.get("/Pedido/Cliente", {
-      params: {
-        clientKey: clientKey ?? null,
-      },
-    });
-    console.log("Resposta da API: " + response.data);
-    return response.data;
+    try {
+      const response = await api.get("/Pedido/Cliente", {
+        headers: {
+          slug: slug,
+        },
+        params: {
+          clientKey: clientKey ?? null,
+        },
+      });
+      return response.data;
+    } catch {
+      return [];
+    }
   }
 }

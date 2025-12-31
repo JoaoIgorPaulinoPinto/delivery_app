@@ -54,7 +54,7 @@
 .infoContainer {
   display: flex;
   gap: 12px;
-  font-size: 0.75rem;
+  font-size: 0.6rem;
   color: var(--text-color-2);
 }
 
@@ -135,5 +135,25 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 380px) {
+  .chevronButton,
+  .iconButton {
+    width: 25px;
+    height: 25px;
+  }
+  .infoContainer {
+    font-size: var(--font-size-sm);
+  }
+  .brandName {
+    font-size: var(--font-size-md);
+  }
+  .dropdownItem {
+    font-size: var(--font-size-sl);
+  }
+  .infoContainer {
+    gap: 6px;
   }
 }

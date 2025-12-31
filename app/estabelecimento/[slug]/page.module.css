@@ -6,7 +6,21 @@
   flex-direction: column;
   padding-bottom: 50px;
 }
+/* No seu page.module.css */
 
+.blocked {
+  user-select: none;
+  overflow: hidden;
+}
+
+.blocked > *:not(:last-child) {
+  pointer-events: none;
+  filter: brightness(0.9);
+}
+
+.blocked > :last-child {
+  pointer-events: auto !important;
+}
 .banner {
   position: relative;
   width: auto;

@@ -9,6 +9,7 @@ import { useCarrinho } from "@/src/store/Carrinho";
 import { useEstabelecimento } from "@/src/store/Estabelecimento";
 import { useUsuario } from "@/src/store/Usuario";
 
+import { useParams } from "next/navigation";
 import AddressModal from "../modal/adress-modal";
 import ConfirmationModal from "../modal/confirmation-modal";
 import PopUpModal from "../modal/pop-up-modal";
@@ -18,14 +19,18 @@ type PaymentMethod = {
   id: number;
   nome: string;
 };
-
+interface FinishOrderProps {
+  onOverlayStateChange?: (isActive: boolean) => void;
+}
 const formatMoney = (value: number) =>
   value.toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
   });
 
-export default function FinishOrder() {
+export default function FinishOrder({
+  onOverlayStateChange,
+}: FinishOrderProps) {
   const api = useMemo(() => new API(), []);
 
   const produtos = useCarrinho((state) => state.produtos);
@@ -49,11 +54,12 @@ export default function FinishOrder() {
   const enderecoPedido =
     deliveryType === "entrega" ? usuario.endereco : estabelecimento!.endereco;
   /* ===================== EFFECTS ===================== */
-
+  const params = useParams();
+  const slug = params.slug as string;
   useEffect(() => {
     const fetchPaymentMethods = async () => {
       try {
-        const res = await api.GetPaymentMeth();
+        const res = await api.GetPaymentMeth(slug);
         setPaymentMethods(res.data);
       } catch (err) {
         console.error("Erro ao buscar métodos de pagamento", err);
@@ -62,7 +68,19 @@ export default function FinishOrder() {
 
     fetchPaymentMethods();
   }, [api]);
+  const isAnythingOpen =
+    isOpen || isConfirmationModalOpen || isAddressModalOpen;
+  useEffect(() => {
+    // Avisa o componente pai (Home) sempre que o estado mudar
+    onOverlayStateChange?.(isAnythingOpen);
 
+    // Opcional: Bloqueia o scroll do body automaticamente
+    if (isAnythingOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [isAnythingOpen, onOverlayStateChange]);
   /* ===================== MEMOS ===================== */
 
   const subtotal = useMemo(() => {
@@ -124,7 +142,7 @@ export default function FinishOrder() {
     };
 
     try {
-      await api.CreatePedido(order);
+      await api.CreatePedido(order, slug);
       clear();
       setIsConfirmationModalOpen(false);
       setIsOpen(false);
@@ -133,7 +151,18 @@ export default function FinishOrder() {
       console.error("Erro ao criar pedido", err);
     }
   };
+  useEffect(() => {
+    if (isOpen || isConfirmationModalOpen || isAddressModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
 
+    // Limpeza ao desmontar o componente
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen, isConfirmationModalOpen, isAddressModalOpen]);
   /* ===================== RENDER ===================== */
 
   return (

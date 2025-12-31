@@ -1,9 +1,8 @@
 "use client";
 // React / Next
 import Image from "next/image";
-import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-
+import { notFound } from "next/navigation";
+import { use, useEffect, useMemo, useState } from "react";
 // Assets
 import banner from "@/public/banner.jpg";
 
@@ -22,11 +21,12 @@ import { useEstabelecimento } from "@/src/store/Estabelecimento";
 import FinishOrder from "@/src/components/ui/finish-order/finish-order";
 import { Search, Settings2 } from "lucide-react";
 import styles from "./page.module.css";
-
-export default function Home() {
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+export default function Home({ params }: PageProps) {
+  const { slug } = use(params);
   const estabelecimento = useEstabelecimento();
-  const params = useParams();
-  const slug = params.slug as string;
   const apiInstance = useMemo(() => new API(), []);
   const [selected, setSelected] = useState<number | null>(null);
   const [categories, setCategories] = useState<{ id: number; nome: string }[]>(
@@ -53,11 +53,35 @@ export default function Home() {
       return matchesCategory && matchesSearch;
     });
   }, [products, selected, searchTerm]);
+  const setEstabelecimento = useEstabelecimento(
+    (state) => state.setEstabelecimento
+  );
+  const [isUiLocked, setIsUiLocked] = useState(false);
+  const api = useMemo(() => new API(), []);
 
+  useEffect(() => {
+    if (!slug) return;
+
+    let active = true;
+
+    api.setStablishment(slug).then((data) => {
+      if (!active) return;
+
+      if (data != null) {
+        setEstabelecimento(data);
+      } else {
+        notFound();
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [slug, api, setEstabelecimento]);
   const loadProductsAndCategories = async () => {
     const [productsData, categoriesRes] = await Promise.all([
-      apiInstance.getProducts(),
-      apiInstance.GetCategories(),
+      apiInstance.getProducts(slug),
+      apiInstance.GetCategories(slug),
     ]);
 
     setProducts(productsData);
@@ -103,7 +127,7 @@ export default function Home() {
     return <p>{error}</p>;
   }
   return (
-    <div className={styles.main}>
+    <div className={`${styles.main} ${isUiLocked ? styles.blocked : ""}`}>
       <div className={styles.banner}>
         <Image src={banner} alt="banner" fill style={{ objectFit: "cover" }} />
       </div>
@@ -159,7 +183,7 @@ export default function Home() {
         })}
       </div>
       <div className={styles.footer}></div>
-      <FinishOrder />
+      <FinishOrder onOverlayStateChange={(state) => setIsUiLocked(state)} />
     </div>
   );
 }

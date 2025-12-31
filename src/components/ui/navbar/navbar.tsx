@@ -1,15 +1,22 @@
 "use client";
 
 import { useEstabelecimento } from "@/src/store/Estabelecimento";
-import { ChevronDown, Clock, Hamburger, MapPin, Settings } from "lucide-react";
+import { Clock, Hamburger, InfoIcon, MapPin, Settings } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./navbar.module.css";
+
+interface horarioFuncionamento {
+  diaSemana: string;
+  abertura: string;
+  fechamento: string;
+}
 
 export default function Navbar() {
   const router = useRouter();
-  const params = useParams<{ slug: string }>();
-  const slug = params?.slug;
+  const params = useParams();
+  // Garante que o slug seja tratado como string de forma segura
+  const slug = params?.slug as string;
 
   const [open, setOpen] = useState(false);
 
@@ -17,59 +24,90 @@ export default function Navbar() {
 
   const nomeFantasia = estabelecimento?.nomeFantasia;
   const endereco = estabelecimento?.endereco;
-  const horarioFuncionamento = estabelecimento?.horarioFuncionamento;
+  const horariosFuncionamento = estabelecimento?.horarioFuncionamento;
   const telefone = estabelecimento?.telefone;
   const whatsapp = estabelecimento?.whatsapp;
   const taxaEntrega = estabelecimento?.taxaEntrega;
   const pedidoMinimo = estabelecimento?.pedidoMinimo;
-  const status = estabelecimento?.status; // string: "Aberto" | "Fechado"
+  const status = estabelecimento?.status;
 
-  // horário de hoje (seguro)
+  const diasSemana = [
+    "Domingo",
+    "Segunda",
+    "Terça",
+    "Quarta",
+    "Quinta",
+    "Sexta",
+    "Sábado",
+  ];
+
   const horarioHoje = useMemo(() => {
-    return horarioFuncionamento?.[0];
-  }, [horarioFuncionamento]);
+    if (!horariosFuncionamento) return null;
+    const hoje = new Date().getDay();
+    const diaAtual = diasSemana[hoje];
+    return horariosFuncionamento.find(
+      (h: horarioFuncionamento) => h.diaSemana === diaAtual
+    );
+  }, [horariosFuncionamento]);
 
+  // LOGICA DE REDIRECIONAMENTO CORRIGIDA (Caminhos Absolutos)
   const handleGoHome = () => {
     if (!slug) return;
-    router.push(`/${slug}`);
+    router.push(`/estabelecimento/${slug}`);
   };
 
   const handleGoToOrders = () => {
     if (!slug) return;
-    router.push(`/${slug}/pedidos`);
+    router.push(`/estabelecimento/${slug}/pedidos`);
   };
 
   const handleGoToSettings = () => {
     if (!slug) return;
-    router.push(`/${slug}/configuracoes`);
+    router.push(`/estabelecimento/${slug}/configuracoes`);
   };
+
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node;
+      if (
+        open &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(target)
+      ) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
   function maskWhatsApp(value: string) {
     const numbers = value.replace(/\D/g, "");
-
     if (numbers.length === 11) {
-      // (11) 91234-5678
       return numbers.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
     }
-
     if (numbers.length === 10) {
-      // (11) 1234-5678
       return numbers.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
     }
-
     return value;
   }
+
   return (
     <nav className={styles.navbar}>
-      {/* BOTÃO SETA */}
       <button
+        ref={buttonRef}
         className={styles.chevronButton}
         onClick={() => setOpen((prev) => !prev)}
         aria-label="Mais informações"
       >
-        <ChevronDown size={20} className={open ? styles.chevronOpen : ""} />
+        <InfoIcon size={20} className={open ? styles.chevronOpen : ""} />
       </button>
 
-      {/* LADO ESQUERDO */}
       <div className={styles.left_side}>
         <button
           className={styles.brandButton}
@@ -89,19 +127,20 @@ export default function Navbar() {
             </div>
           )}
 
-          {horarioHoje && (
-            <div className={styles.infoItem}>
-              <Clock size={14} />
+          <div className={styles.infoItem}>
+            <Clock size={14} />
+            {horarioHoje ? (
               <span>
-                {horarioHoje.abertura.slice(0, 5)} às{" "}
-                {horarioHoje.fechamento.slice(0, 5)}
+                {horarioHoje.abertura?.substring(0, 5)} às{" "}
+                {horarioHoje.fechamento?.substring(0, 5)}
               </span>
-            </div>
-          )}
+            ) : (
+              <span>{estabelecimento?.status} hoje</span>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* LADO DIREITO */}
       <div className={styles.right_side}>
         <button
           aria-label="Pedidos"
@@ -120,10 +159,8 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* DROPDOWN */}
       {open && (
-        <div className={styles.dropdown}>
-          {/* STATUS */}
+        <div ref={dropdownRef} className={styles.dropdown}>
           {status && (
             <div className={styles.statusRow}>
               <span
@@ -135,7 +172,6 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* ENDEREÇO */}
           {endereco && (
             <div className={styles.dropdownItem}>
               <MapPin size={16} />
@@ -147,43 +183,40 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* HORÁRIO */}
-          {horarioHoje && (
-            <div className={styles.dropdownItem}>
-              <Clock size={16} />
+          <div className={styles.dropdownItem}>
+            <Clock size={16} />
+            {horarioHoje ? (
               <span>
-                {horarioHoje.diaSemana}: {horarioHoje.abertura.slice(0, 5)} às
-                {horarioHoje.fechamento.slice(0, 5)}
+                {horarioHoje.diaSemana}: {horarioHoje.abertura?.substring(0, 5)}{" "}
+                às {horarioHoje.fechamento?.substring(0, 5)}
               </span>
-            </div>
-          )}
+            ) : (
+              <span>Fechado hoje</span>
+            )}
+          </div>
 
-          {/* TELEFONE */}
           {telefone && (
             <div className={styles.dropdownItem}>
               📞 <span>Telefone: {maskWhatsApp(telefone)}</span>
             </div>
           )}
 
-          {/* WHATSAPP */}
           {whatsapp && (
             <div className={styles.dropdownItem}>
-              💬 <span>💬 WhatsApp: {maskWhatsApp(whatsapp)}</span>
+              💬 <span>WhatsApp: {maskWhatsApp(whatsapp)}</span>
             </div>
           )}
 
-          {/* TAXA */}
           {taxaEntrega !== undefined && (
             <div className={styles.dropdownItem}>
-              🚚
+              🚚{" "}
               <span>
-                Taxa de entrega:
+                Taxa de entrega:{" "}
                 {taxaEntrega === 0 ? "Grátis" : `R$ ${taxaEntrega.toFixed(2)}`}
               </span>
             </div>
           )}
 
-          {/* PEDIDO MÍNIMO */}
           {pedidoMinimo !== undefined && (
             <div className={styles.dropdownItem}>
               💰 <span>Pedido mínimo: R$ {pedidoMinimo.toFixed(2)}</span>

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Aplicativo para restaurantes e lanchonetes",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
