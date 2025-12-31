@@ -136,8 +136,6 @@ export default function FinishOrder() {
 
   /* ===================== RENDER ===================== */
 
-  if (produtos.length === 0 && !isOpen) return null;
-
   return (
     <div className={isOpen ? styles.confirmationOverlay : styles.footer}>
       <div className={styles.footer_container}>

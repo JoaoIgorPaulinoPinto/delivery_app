@@ -3,9 +3,11 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { EnderecoPedido } from "../models/models";
 
 // Interfaces baseadas no seu Schema
-interface StatusEstabelecimento {
-  id: number;
-  nome: string;
+
+interface horarioFuncionamento {
+  diaSemana: string;
+  abertura: string;
+  fechamento: string;
 }
 
 export interface Estabelecimento {
@@ -16,11 +18,10 @@ export interface Estabelecimento {
   email: string;
   whatsapp: string;
   endereco: EnderecoPedido;
-  abertura: string;
-  fechamento: string;
+  horarioFuncionamento: horarioFuncionamento[];
   taxaEntrega: number;
   pedidoMinimo: number;
-  status: StatusEstabelecimento;
+  status: string;
 }
 
 type EstabelecimentoState = {

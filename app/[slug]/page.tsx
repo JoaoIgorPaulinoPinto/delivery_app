@@ -38,18 +38,14 @@ export default function Home() {
   const produtosNoCarrinho = useCarrinho((state) => state.produtos);
   const clearCart = useCarrinho((state) => state.clear);
 
-  const selectedCategoryId = selected;
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  // Unifica busca por texto e filtro por categoria
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
-      // Se não houver categoria selecionada, matchesCategory é true para todos
       const matchesCategory = selected
         ? product.categoria.id === selected
         : true;
 
-      // Se searchTerm estiver vazio, matchesSearch será true para todos (ou use uma string vazia como fallback)
       const matchesSearch = product.nome
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase().trim());
@@ -57,11 +53,6 @@ export default function Home() {
       return matchesCategory && matchesSearch;
     });
   }, [products, selected, searchTerm]);
-  const loadEstablishment = async (slug: string) => {
-    const data = await apiInstance.setStablishment(slug);
-    estabelecimento.setEstabelecimento(data);
-    return data;
-  };
 
   const loadProductsAndCategories = async () => {
     const [productsData, categoriesRes] = await Promise.all([
@@ -81,8 +72,7 @@ export default function Home() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const est = await loadEstablishment(slug);
-        if (est?.id && isMounted) {
+        if (isMounted) {
           await loadProductsAndCategories();
         }
       } catch (err) {
@@ -95,6 +85,7 @@ export default function Home() {
 
     fetchData();
 
+    console.log(estabelecimento.estabelecimento);
     return () => {
       isMounted = false;
     };
