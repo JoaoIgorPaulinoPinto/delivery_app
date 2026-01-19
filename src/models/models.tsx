@@ -1,4 +1,4 @@
-import { Estabelecimento } from "../store/Estabelecimento";
+import { EnderecoResponse, EstabelecimentoResponse } from "../Services/API";
 
 export interface ProdutoPedido {
   id: number;
@@ -31,10 +31,10 @@ export interface UsuarioPedido {
 export interface Pedido {
   id?: number;
   produtos: ProdutoPedido[];
-  endereco: EnderecoPedido;
+  endereco: EnderecoResponse;
   observacao: string;
   metodoPagamentoId: number;
   status?: { id: number; nome: string };
   usuario: UsuarioPedido;
-  estabelecimento?: Estabelecimento;
+  estabelecimento?: EstabelecimentoResponse;
 }

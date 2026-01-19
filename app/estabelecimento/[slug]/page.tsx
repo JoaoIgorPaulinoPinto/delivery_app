@@ -1,7 +1,6 @@
 "use client";
 // React / Next
 import Image from "next/image";
-import { notFound } from "next/navigation";
 import { use, useEffect, useMemo, useState } from "react";
 // Assets
 import banner from "@/public/banner.jpg";
@@ -15,7 +14,6 @@ import { API } from "@/src/Services/API";
 
 // Stores
 import { useCarrinho } from "@/src/store/Carrinho";
-import { useEstabelecimento } from "@/src/store/Estabelecimento";
 
 // Styles
 import FinishOrder from "@/src/components/ui/finish-order/finish-order";
@@ -26,11 +24,10 @@ interface PageProps {
 }
 export default function Home({ params }: PageProps) {
   const { slug } = use(params);
-  const estabelecimento = useEstabelecimento();
   const apiInstance = useMemo(() => new API(), []);
   const [selected, setSelected] = useState<number | null>(null);
   const [categories, setCategories] = useState<{ id: number; nome: string }[]>(
-    []
+    [],
   );
   const [products, setProducts] = useState<ProdutoPedido[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,39 +50,38 @@ export default function Home({ params }: PageProps) {
       return matchesCategory && matchesSearch;
     });
   }, [products, selected, searchTerm]);
-  const setEstabelecimento = useEstabelecimento(
-    (state) => state.setEstabelecimento
-  );
+
   const [isUiLocked, setIsUiLocked] = useState(false);
   const api = useMemo(() => new API(), []);
 
-  useEffect(() => {
-    if (!slug) return;
+  // useEffect(() => {
+  //   if (!slug) return;
 
-    let active = true;
+  //   let active = true;
 
-    api.setStablishment(slug).then((data) => {
-      if (!active) return;
+  //   api.setStablishment(slug).then((data) => {
+  //     if (!active) return;
 
-      if (data != null) {
-        setEstabelecimento(data);
-      } else {
-        notFound();
-      }
-    });
+  //     if (data != null) {
+  //       setEstabelecimento(data);
+  //     } else {
+  //       notFound();
+  //     }
+  //   });
 
-    return () => {
-      active = false;
-    };
-  }, [slug, api, setEstabelecimento]);
-  const loadProductsAndCategories = async () => {
+  //   return () => {
+  //     active = false;
+  //   };
+  // }, [slug, api, setEstabelecimento]);
+
+  //   setProducts(productsData);
+  //   setCategories(categoriesRes.data);
+  // };
+  const LoadProductsAndCategories = async () => {
     const [productsData, categoriesRes] = await Promise.all([
-      apiInstance.getProducts(slug),
-      apiInstance.GetCategories(slug),
+      apiInstance.getProdutos(slug),
+      apiInstance.getCategorias(slug),
     ]);
-
-    setProducts(productsData);
-    setCategories(categoriesRes.data);
   };
 
   useEffect(() => {
@@ -97,7 +93,7 @@ export default function Home({ params }: PageProps) {
       try {
         setLoading(true);
         if (isMounted) {
-          await loadProductsAndCategories();
+          await LoadProductsAndCategories();
         }
       } catch (err) {
         setError("Erro ao carregar cardápio");
@@ -109,11 +105,9 @@ export default function Home({ params }: PageProps) {
 
     fetchData();
 
-    console.log(estabelecimento.estabelecimento);
     return () => {
       isMounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   if (loading) {
@@ -168,7 +162,11 @@ export default function Home({ params }: PageProps) {
 
       <div className={styles.products}>
         <div
-          style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
         >
           {produtosNoCarrinho.length > 0 && (
             <button className={styles.clear_cart_button} onClick={clearCart}>

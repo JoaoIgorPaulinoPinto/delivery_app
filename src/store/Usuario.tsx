@@ -58,6 +58,6 @@ export const useUsuario = create<UsuarioState>()(
     {
       name: "usuario-storage",
       storage: createJSONStorage(() => localStorage),
-    }
-  )
+    },
+  ),
 );

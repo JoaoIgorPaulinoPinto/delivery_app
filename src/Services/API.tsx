@@ -4,8 +4,18 @@ export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     "Content-Type": "application/json",
+    withCredentials: "true",
   },
 });
+export interface EnderecoResponse {
+  rua: string;
+  numero: string;
+  bairro: string;
+  cidade: string;
+  uf: string;
+  cep: string;
+  complemento?: string;
+}
 
 export interface CategoriaResponse {
   id: number;
@@ -32,14 +42,16 @@ export interface EstabelecimentoResponse {
   pedidoMinimo: number;
   telefone?: string;
   whatsapp?: string;
+  endereco: EnderecoResponse;
+  status?: string;
 }
 export class API {
   public async getEstabelecimento(
     slug: string,
   ): Promise<EstabelecimentoResponse> {
-    const response = await api.get("/Estabelecimento", {
+    const response = await api.get("Estabelecimento", {
       params: {
-        slug: slug,
+        estabelecimentoSlug: slug,
       },
     });
     const res: EstabelecimentoResponse = {
@@ -49,33 +61,37 @@ export class API {
       pedidoMinimo: response.data.pedidoMinimo,
       telefone: response.data.telefone,
       whatsapp: response.data.whatsapp,
+      endereco: response.data.endereco,
+      status: response.data.status,
     };
     return res;
   }
 
+  //pegar as categorias de produtos
   public async getCategorias(
     estabelecimentoSlug: string,
   ): Promise<CategoriaResponse[]> {
-    const response = await api.get("/categorias", {
+    const response = await api.get("/Categoria", {
       params: {
-        estabelecimentoSlug: estabelecimentoSlug,
+        estabelecimentoSlug,
       },
     });
 
-    const categoriaResponse: CategoriaResponse[] = [];
-    for (const categoria of response.data) {
-      categoriaResponse.push({
+    const categoriaResponse: CategoriaResponse[] = response.data.map(
+      (categoria: CategoriaResponse) => ({
         id: categoria.id,
         categoria: categoria.categoria,
-      });
-    }
+      }),
+    );
+
     return categoriaResponse;
   }
 
+  //pegar produtos
   public async getProdutos(
     estabelecimentoSlug: string,
   ): Promise<ProdutosResponse[]> {
-    const response = await api.get("/produtos", {
+    const response = await api.get("/Produto", {
       params: {
         estabelecimentoSlug: estabelecimentoSlug,
       },

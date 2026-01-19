@@ -1,9 +1,9 @@
 "use client";
 
-import { EnderecoPedido, Pedido } from "@/src/models/models";
-import { API } from "@/src/Services/API";
+import { Pedido } from "@/src/models/models";
+import { API, EnderecoResponse } from "@/src/Services/API";
 import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import styles from "./page.module.css";
 
 export default function OrdersPage() {
@@ -16,23 +16,23 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [pedidos, setPedidos] = useState<Pedido[] | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!slug) return;
-      try {
-        const data = await apiInstance.getPedidos(slug);
-        setPedidos(data);
-      } catch (error) {
-        console.error("Erro ao carregar dados:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (!slug) return;
+  //     try {
+  //       const data = await apiInstance.getPedidos(slug);
+  //       setPedidos(data);
+  //     } catch (error) {
+  //       console.error("Erro ao carregar dados:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchData();
-  }, [slug, apiInstance]);
+  //   fetchData();
+  // }, [slug, apiInstance]);
 
-  const formatarEndereco = (endereco?: EnderecoPedido) => {
+  const formatarEndereco = (endereco?: EnderecoResponse) => {
     if (!endereco) return "Endereço não informado";
     const { rua, numero, bairro, cidade } = endereco;
     return `${rua}, ${numero} - ${bairro}, ${cidade}`;
@@ -63,7 +63,7 @@ export default function OrdersPage() {
             // Cálculo do total movido para dentro do map para clareza
             const subtotal = p.produtos.reduce(
               (acc, item) => acc + (item.preco ?? 0) * item.quantidade,
-              0
+              0,
             );
             const taxaEntrega = p.estabelecimento?.taxaEntrega ?? 0;
             const total = subtotal + taxaEntrega;

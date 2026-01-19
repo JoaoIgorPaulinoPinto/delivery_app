@@ -4,9 +4,8 @@ import { MapPin, ShoppingCart, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Pedido } from "@/src/models/models";
-import { API } from "@/src/Services/API";
+import { API, EstabelecimentoResponse } from "@/src/Services/API";
 import { useCarrinho } from "@/src/store/Carrinho";
-import { useEstabelecimento } from "@/src/store/Estabelecimento";
 import { useUsuario } from "@/src/store/Usuario";
 
 import { useParams } from "next/navigation";
@@ -19,9 +18,11 @@ type PaymentMethod = {
   id: number;
   nome: string;
 };
+
 interface FinishOrderProps {
   onOverlayStateChange?: (isActive: boolean) => void;
 }
+
 const formatMoney = (value: number) =>
   value.toLocaleString("pt-BR", {
     style: "currency",
@@ -34,11 +35,19 @@ export default function FinishOrder({
   const api = useMemo(() => new API(), []);
 
   const produtos = useCarrinho((state) => state.produtos);
-  const remove = useCarrinho((state) => state.remove);
   const clear = useCarrinho((state) => state.clear);
-
   const usuario = useUsuario();
-  const { estabelecimento } = useEstabelecimento();
+
+  const params = useParams();
+  const slug = params.slug as string;
+
+  const [estabelecimento, setEstabelecimento] =
+    useState<EstabelecimentoResponse | null>(null);
+
+  useEffect(() => {
+    if (!slug) return;
+    api.getEstabelecimento(slug).then(setEstabelecimento);
+  }, [slug, api]);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -51,36 +60,20 @@ export default function FinishOrder({
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
     number | null
   >(null);
+
   const enderecoPedido =
-    deliveryType === "entrega" ? usuario.endereco : estabelecimento!.endereco;
-  /* ===================== EFFECTS ===================== */
-  const params = useParams();
-  const slug = params.slug as string;
-  useEffect(() => {
-    // const fetchPaymentMethods = async () => {
-    //   try {
-    //     const res = await api.GetPaymentMeth(slug);
-    //     setPaymentMethods(res.data);
-    //   } catch (err) {
-    //     console.error("Erro ao buscar métodos de pagamento", err);
-    //   }
-    // };
-    // fetchPaymentMethods();
-  }, [api]);
+    deliveryType === "entrega" ? usuario.endereco : estabelecimento?.endereco;
+
   const isAnythingOpen =
     isOpen || isConfirmationModalOpen || isAddressModalOpen;
-  useEffect(() => {
-    // Avisa o componente pai (Home) sempre que o estado mudar
-    onOverlayStateChange?.(isAnythingOpen);
 
-    // Opcional: Bloqueia o scroll do body automaticamente
-    if (isAnythingOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
+  useEffect(() => {
+    onOverlayStateChange?.(isAnythingOpen);
+    document.body.style.overflow = isAnythingOpen ? "hidden" : "unset";
+    return () => {
       document.body.style.overflow = "unset";
-    }
+    };
   }, [isAnythingOpen, onOverlayStateChange]);
-  /* ===================== MEMOS ===================== */
 
   const subtotal = useMemo(() => {
     return produtos.reduce(
@@ -93,8 +86,6 @@ export default function FinishOrder({
     deliveryType === "entrega" ? (estabelecimento?.taxaEntrega ?? 0) : 0;
 
   const totalGeral = subtotal + taxaEntrega;
-
-  /* ===================== HANDLERS ===================== */
 
   const toggleDeliveryType = () => {
     setDeliveryType((prev) => (prev === "entrega" ? "retirada" : "entrega"));
@@ -133,41 +124,23 @@ export default function FinishOrder({
       })),
       observacao: obs,
       metodoPagamentoId: selectedPaymentMethodId,
-      endereco: enderecoPedido,
+      endereco: enderecoPedido!,
       usuario: {
         nome: name,
         telefone: phone,
       },
     };
 
-    // try {
-    //   await api.CreatePedido(order, slug);
-    //   clear();
-    //   setIsConfirmationModalOpen(false);
-    //   setIsOpen(false);
-    //   alert(`Pedido confirmado! Total: ${formatMoney(totalGeral)}`);
-    // } catch (err) {
-    //   console.error("Erro ao criar pedido", err);
-    // }
+    // await api.CreatePedido(order, slug);
+    clear();
+    setIsConfirmationModalOpen(false);
+    setIsOpen(false);
+    alert(`Pedido confirmado! Total: ${formatMoney(totalGeral)}`);
   };
-  useEffect(() => {
-    if (isOpen || isConfirmationModalOpen || isAddressModalOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-
-    // Limpeza ao desmontar o componente
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen, isConfirmationModalOpen, isAddressModalOpen]);
-  /* ===================== RENDER ===================== */
 
   return (
     <div className={isOpen ? styles.confirmationOverlay : styles.footer}>
       <div className={styles.footer_container}>
-        {/* HEADER */}
         <div className={styles.footer_head}>
           <div className={styles.footer_info_text}>
             <span className={styles.footer_total}>
