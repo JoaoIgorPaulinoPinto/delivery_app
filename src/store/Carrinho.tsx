@@ -31,7 +31,7 @@ export const useCarrinho = create<CarrinhoState>()(
               produtos: state.produtos.map((p) =>
                 p.id === product.id
                   ? { ...p, quantidade: (p.quantidade ?? 0) + 1 }
-                  : p
+                  : p,
               ),
             };
           }
@@ -59,7 +59,7 @@ export const useCarrinho = create<CarrinhoState>()(
             produtos: state.produtos.map((p) =>
               p.id === product.id
                 ? { ...p, quantidade: (p.quantidade ?? 0) - 1 }
-                : p
+                : p,
             ),
           };
         }),
@@ -69,6 +69,6 @@ export const useCarrinho = create<CarrinhoState>()(
 
     {
       name: "carrinho-storage",
-    }
-  )
+    },
+  ),
 );

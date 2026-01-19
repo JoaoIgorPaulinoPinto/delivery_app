@@ -45,7 +45,7 @@ export default function FinishOrder({
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
   const [deliveryType, setDeliveryType] = useState<"retirada" | "entrega">(
-    "retirada"
+    "retirada",
   );
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
@@ -57,16 +57,15 @@ export default function FinishOrder({
   const params = useParams();
   const slug = params.slug as string;
   useEffect(() => {
-    const fetchPaymentMethods = async () => {
-      try {
-        const res = await api.GetPaymentMeth(slug);
-        setPaymentMethods(res.data);
-      } catch (err) {
-        console.error("Erro ao buscar métodos de pagamento", err);
-      }
-    };
-
-    fetchPaymentMethods();
+    // const fetchPaymentMethods = async () => {
+    //   try {
+    //     const res = await api.GetPaymentMeth(slug);
+    //     setPaymentMethods(res.data);
+    //   } catch (err) {
+    //     console.error("Erro ao buscar métodos de pagamento", err);
+    //   }
+    // };
+    // fetchPaymentMethods();
   }, [api]);
   const isAnythingOpen =
     isOpen || isConfirmationModalOpen || isAddressModalOpen;
@@ -86,12 +85,12 @@ export default function FinishOrder({
   const subtotal = useMemo(() => {
     return produtos.reduce(
       (acc, item) => acc + (item.quantidade ?? 0) * item.preco,
-      0
+      0,
     );
   }, [produtos]);
 
   const taxaEntrega =
-    deliveryType === "entrega" ? estabelecimento?.taxaEntrega ?? 0 : 0;
+    deliveryType === "entrega" ? (estabelecimento?.taxaEntrega ?? 0) : 0;
 
   const totalGeral = subtotal + taxaEntrega;
 
@@ -104,7 +103,7 @@ export default function FinishOrder({
   const handleConfirmOrder = async (
     name: string,
     phone: string,
-    obs: string
+    obs: string,
   ) => {
     if (produtos.length === 0) {
       alert("Carrinho vazio");
@@ -141,15 +140,15 @@ export default function FinishOrder({
       },
     };
 
-    try {
-      await api.CreatePedido(order, slug);
-      clear();
-      setIsConfirmationModalOpen(false);
-      setIsOpen(false);
-      alert(`Pedido confirmado! Total: ${formatMoney(totalGeral)}`);
-    } catch (err) {
-      console.error("Erro ao criar pedido", err);
-    }
+    // try {
+    //   await api.CreatePedido(order, slug);
+    //   clear();
+    //   setIsConfirmationModalOpen(false);
+    //   setIsOpen(false);
+    //   alert(`Pedido confirmado! Total: ${formatMoney(totalGeral)}`);
+    // } catch (err) {
+    //   console.error("Erro ao criar pedido", err);
+    // }
   };
   useEffect(() => {
     if (isOpen || isConfirmationModalOpen || isAddressModalOpen) {
@@ -275,10 +274,12 @@ export default function FinishOrder({
             <h3>Itens do Pedido</h3>
             <table className={styles.table}>
               <thead>
-                <th>Produto</th>
-                <th>Quantidade</th>
-                <th>Preço</th>
-                <th>Valor</th>
+                <tr>
+                  <th>Produto</th>
+                  <th>Quantidade</th>
+                  <th>Preço</th>
+                  <th>Valor</th>
+                </tr>
               </thead>
               <tbody>
                 {produtos.map((item) => (

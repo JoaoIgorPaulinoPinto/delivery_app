@@ -11,7 +11,7 @@ const nextConfig = {
   },
   // Tente listar o IP que apareceu no erro
   experimental: {
-    allowedDevOrigins: ["192.168.1.18", "localhost:3000"],
+    allowedDevOrigins: ["192.168.1.4", "localhost:3000"],
   },
   // Se a versão do seu Next for mais recente, pode ser assim:
   devIndicators: {

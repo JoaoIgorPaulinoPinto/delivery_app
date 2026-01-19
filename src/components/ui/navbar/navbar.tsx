@@ -147,7 +147,7 @@ export default function Navbar() {
           onClick={handleGoToOrders}
           className={styles.iconButton}
         >
-          <ShoppingBasket size={20} />
+          0<ShoppingBasket size={20} />
         </button>
 
         {/* <button

@@ -42,6 +42,6 @@ export const useEstabelecimento = create<EstabelecimentoState>()(
     {
       name: "estabelecimento-storage",
       storage: createJSONStorage(() => localStorage),
-    }
-  )
+    },
+  ),
 );
