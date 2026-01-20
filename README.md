@@ -94,22 +94,6 @@ Copy code
 
 ---
 
-## Estrutura do Projeto
-
-delivery_app/
-├── app/
-├── components/
-├── services/
-├── store/
-├── public/
-├── styles/
-└── README.md
-
-yaml
-Copy code
-
----
-
 ## Backend
 
 Este frontend consome a API desenvolvida em ASP.NET Web API.
