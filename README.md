@@ -53,29 +53,17 @@ Ele consome uma **API REST desenvolvida em ASP.NET Web API**, sendo responsável
 1. Clone o repositório:
 git clone https://github.com/JoaoIgorPaulinoPinto/delivery_app.git
 
-csharp
-
 2. Instale as dependências:
 npm install
-
-ou
-yarn install
-
 
 3. Crie o arquivo de ambiente:
 .env.local
 
-
 Exemplo:
 NEXT_PUBLIC_API_URL=http://localhost:5001
 
-
-
 4. Execute o projeto:
 npm run dev
-
-ou
-yarn dev
 
 5. Acesse no navegador:
 http://localhost:3000
