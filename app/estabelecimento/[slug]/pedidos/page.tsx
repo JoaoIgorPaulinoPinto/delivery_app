@@ -20,7 +20,7 @@ export default function OrdersPage() {
   //   const fetchData = async () => {
   //     if (!slug) return;
   //     try {
-  //       const data = await apiInstance.getPedidos(slug);
+  //       const data = await apiInstance.getPedidGeos(slug);
   //       setPedidos(data);
   //     } catch (error) {
   //       console.error("Erro ao carregar dados:", error);

@@ -21,6 +21,10 @@ export interface CategoriaResponse {
   id: number;
   categoria: string;
 }
+export interface MetodoPagamentoResponse {
+  id: number;
+  nome: string;
+}
 export interface ProdutosResponse {
   id: number;
   nome: string;
@@ -45,6 +49,32 @@ export interface EstabelecimentoResponse {
   endereco: EnderecoResponse;
   status?: string;
 }
+export interface CreatePedidoDTO {
+  nomeCliente?: string;
+  telefoneCliente?: string;
+  metodoPagamento: number;
+  produtoPedidos?: CreateProdutoPedidoDTO[];
+  observacao?: string;
+  endereco: CreateEnderecoDTO;
+  sessionToken?: string;
+}
+
+export interface CreateProdutoPedidoDTO {
+  // Complete de acordo com a definição real desse DTO
+  produtoId: number;
+  quantidade: number;
+}
+
+export interface CreateEnderecoDTO {
+  ufId: number;
+  cidadeId: number;
+  bairro?: string;
+  numero?: string;
+  cep?: string;
+  rua?: string;
+  complemento?: string;
+}
+
 export class API {
   public async getEstabelecimento(
     slug: string,
@@ -61,9 +91,18 @@ export class API {
       pedidoMinimo: response.data.pedidoMinimo,
       telefone: response.data.telefone,
       whatsapp: response.data.whatsapp,
-      endereco: response.data.endereco,
+      endereco: {
+        bairro: response.data.endereco.bairro,
+        cep: response.data.endereco.cep,
+        cidade: response.data.endereco.cidade,
+        complemento: response.data.endereco.complemento,
+        numero: response.data.endereco.numero,
+        rua: response.data.endereco.rua,
+        uf: response.data.endereco.uf,
+      },
       status: response.data.status,
     };
+    console.log(res);
     return res;
   }
 
@@ -83,8 +122,26 @@ export class API {
         categoria: categoria.categoria,
       }),
     );
-
+    console.log(categoriaResponse);
     return categoriaResponse;
+  }
+  //pegar as metodos de pagamento
+  public async getMetodosPagamento(
+    estabelecimentoSlug: string,
+  ): Promise<MetodoPagamentoResponse[]> {
+    const response = await api.get("/MetodoPagamento", {
+      params: {
+        estabelecimentoSlug,
+      },
+    });
+
+    const metodoPagamentoResponse: MetodoPagamentoResponse[] =
+      response.data.map((metodoPagamento: MetodoPagamentoResponse) => ({
+        id: metodoPagamento.id,
+        nome: metodoPagamento.nome,
+      }));
+    console.log(metodoPagamentoResponse);
+    return metodoPagamentoResponse;
   }
 
   //pegar produtos
@@ -107,6 +164,28 @@ export class API {
         categoriaId: produto.categoriaId,
       });
     }
+    console.log(produtosResponse);
     return produtosResponse;
+  }
+
+  //pegar as categorias de produtos
+  public async CriarPedidos(
+    pedido: CreatePedidoDTO,
+    estabalecimentoSlug: string,
+  ): Promise<string> {
+    const token = localStorage.getItem("sessionToken");
+
+    const response = await api.post("/Pedido", {
+      headers: {
+        sessionToken: token || "",
+      },
+      params: {
+        estabalecimentoSlug,
+      },
+      data: pedido,
+    });
+
+    localStorage.setItem("sessionToken", response.data.sessionToken);
+    return "Pedido criado com sucesso";
   }
 }

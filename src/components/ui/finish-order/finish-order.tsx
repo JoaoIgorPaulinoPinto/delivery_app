@@ -3,8 +3,12 @@
 import { MapPin, ShoppingCart, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { Pedido } from "@/src/models/models";
-import { API, EstabelecimentoResponse } from "@/src/Services/API";
+import {
+  API,
+  CreatePedidoDTO,
+  EstabelecimentoResponse,
+  MetodoPagamentoResponse,
+} from "@/src/Services/API";
 import { useCarrinho } from "@/src/store/Carrinho";
 import { useUsuario } from "@/src/store/Usuario";
 
@@ -44,11 +48,6 @@ export default function FinishOrder({
   const [estabelecimento, setEstabelecimento] =
     useState<EstabelecimentoResponse | null>(null);
 
-  useEffect(() => {
-    if (!slug) return;
-    api.getEstabelecimento(slug).then(setEstabelecimento);
-  }, [slug, api]);
-
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
@@ -56,7 +55,9 @@ export default function FinishOrder({
   const [deliveryType, setDeliveryType] = useState<"retirada" | "entrega">(
     "retirada",
   );
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<
+    MetodoPagamentoResponse[]
+  >([]);
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
     number | null
   >(null);
@@ -66,7 +67,20 @@ export default function FinishOrder({
 
   const isAnythingOpen =
     isOpen || isConfirmationModalOpen || isAddressModalOpen;
+  useEffect(() => {
+    if (!slug) return;
 
+    const fetchEstabelecimento = async () => {
+      const data = await api.getEstabelecimento(slug);
+      setEstabelecimento(data);
+      const paymentMethods = await api.getMetodosPagamento(slug);
+      setPaymentMethods(paymentMethods);
+
+      console.log("estabelecimento:", data);
+    };
+
+    fetchEstabelecimento();
+  }, [slug, api]);
   useEffect(() => {
     onOverlayStateChange?.(isAnythingOpen);
     document.body.style.overflow = isAnythingOpen ? "hidden" : "unset";
@@ -111,8 +125,8 @@ export default function FinishOrder({
       return;
     }
 
-    const order: Pedido = {
-      produtos: produtos.map((p) => ({
+    const order: CreatePedidoDTO = {
+      produtoPedidos: produtos.map((p) => ({
         id: p.id,
         produtoId: p.id,
         imgUrl: p.imgUrl || "",
@@ -123,15 +137,21 @@ export default function FinishOrder({
         nome: p.nome,
       })),
       observacao: obs,
-      metodoPagamentoId: selectedPaymentMethodId,
-      endereco: enderecoPedido!,
-      usuario: {
-        nome: name,
-        telefone: phone,
+      metodoPagamento: selectedPaymentMethodId,
+      endereco: {
+        rua: enderecoPedido?.rua || "",
+        numero: enderecoPedido?.numero || "",
+        bairro: enderecoPedido?.bairro || "",
+        cidadeId: 1 || 2,
+        ufId: 1 || 2,
+        cep: enderecoPedido?.cep || "",
+        complemento: enderecoPedido?.complemento || "",
       },
+      nomeCliente: name,
+      telefoneCliente: phone,
     };
 
-    // await api.CreatePedido(order, slug);
+    await api.CriarPedidos(order, slug);
     clear();
     setIsConfirmationModalOpen(false);
     setIsOpen(false);
@@ -195,6 +215,7 @@ export default function FinishOrder({
               </div>
             </div>
           </div>
+
           <div className={styles.section}>
             <h3>Endereço</h3>
             <div className={styles.addressBox}>
@@ -203,8 +224,8 @@ export default function FinishOrder({
                   <label>
                     {usuario.endereco?.rua ? (
                       <p>
-                        {usuario!.endereco.rua},{usuario!.endereco.numero} -{" "}
-                        {usuario!.endereco.cidade}/{usuario!.endereco.uf}
+                        {usuario.endereco.rua},{usuario.endereco.numero} -{" "}
+                        {usuario.endereco.cidade}/{usuario.endereco.uf}
                       </p>
                     ) : (
                       "Nenhum endereço cadastrado"
@@ -217,16 +238,19 @@ export default function FinishOrder({
                     {usuario.endereco ? "Alterar" : "Cadastrar"}
                   </button>
                 </>
-              ) : (
+              ) : estabelecimento ? (
                 <p>
-                  {estabelecimento!.endereco.rua},
-                  {estabelecimento!.endereco.numero} -{" "}
-                  {estabelecimento!.endereco.cidade}/
-                  {estabelecimento!.endereco.uf}
+                  {estabelecimento.endereco.rua},
+                  {estabelecimento.endereco.numero} -{" "}
+                  {estabelecimento.endereco.cidade}/
+                  {estabelecimento.endereco.uf}
                 </p>
+              ) : (
+                <p>Carregando endereço...</p>
               )}
             </div>
           </div>
+
           <div className={styles.section}>
             <h3>Forma de Pagamento</h3>
             <div className={styles.paymentRow}>
@@ -243,6 +267,7 @@ export default function FinishOrder({
               ))}
             </div>
           </div>
+
           <div className={styles.section}>
             <h3>Itens do Pedido</h3>
             <table className={styles.table}>
@@ -291,6 +316,7 @@ export default function FinishOrder({
               <strong>{formatMoney(totalGeral)}</strong>
             </div>
           </div>
+
           <button
             className={styles.finishButton}
             onClick={() => setIsConfirmationModalOpen(true)}
