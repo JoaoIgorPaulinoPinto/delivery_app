@@ -115,14 +115,14 @@ Copy code
 Este frontend consome a API desenvolvida em ASP.NET Web API.
 
 Repositório do backend:
-https://github.com/JoaoIgorPaulinoPinto/delivery_app-api
+[https://github.com/JoaoIgorPaulinoPinto/delivery_app-api](https://github.com/JoaoIgorPaulinoPinto/comaagora_api)
 
 ---
 
 ## Autor
 
 João Igor Paulino Pinto  
-GitHub: https://github.com/JoaoIgorPaulinoPinto
+GitHub: [https://github.com/JoaoIgorPaulinoPinto](https://github.com/JoaoIgorPaulinoPinto)
 
 ---
 
