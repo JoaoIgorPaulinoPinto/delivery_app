@@ -54,7 +54,6 @@ Ele consome uma **API REST desenvolvida em ASP.NET Web API**, sendo responsável
 git clone https://github.com/JoaoIgorPaulinoPinto/delivery_app.git
 
 csharp
-Copy code
 
 2. Instale as dependências:
 npm install
@@ -62,20 +61,15 @@ npm install
 ou
 yarn install
 
-markdown
-Copy code
 
 3. Crie o arquivo de ambiente:
 .env.local
 
-makefile
-Copy code
 
 Exemplo:
 NEXT_PUBLIC_API_URL=http://localhost:5001
 
-markdown
-Copy code
+
 
 4. Execute o projeto:
 npm run dev
@@ -83,14 +77,8 @@ npm run dev
 ou
 yarn dev
 
-markdown
-Copy code
-
 5. Acesse no navegador:
 http://localhost:3000
-
-yaml
-Copy code
 
 ---
 
