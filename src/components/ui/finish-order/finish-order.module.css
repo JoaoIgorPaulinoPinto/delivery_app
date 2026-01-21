@@ -21,6 +21,7 @@
 }
 
 .footer_head {
+  padding: 0 5px;
   background: var(--background-color-6);
   display: flex;
   justify-content: space-between;
@@ -33,6 +34,11 @@
 .footer_total {
   font-size: var(--font-size-xxl);
   font-weight: bold;
+}
+.deliveryTax {
+  font-size: var(--font-size-lg);
+  margin-left: var(--space-sm);
+  color: var(--text-color-1);
 }
 .footer_cart {
   font-size: var(--font-size-xlg);
@@ -58,7 +64,9 @@
   overflow: hidden;
   background: var(--background-color-1);
   padding: 0 var(--size-sm);
-  transition: max-height 0.4s ease, padding 0.3s ease;
+  transition:
+    max-height 0.4s ease,
+    padding 0.3s ease;
 }
 
 .open {
@@ -105,7 +113,10 @@
   padding: var(--size-xs) var(--size-sm);
   color: var(--text-color-1);
   border-radius: var(--size-sm);
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.25s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.25s ease;
 }
 .delivery_row_toggle_left {
   border-radius: var(--radius-md) 0 0 var(--radius-md);

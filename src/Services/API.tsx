@@ -173,19 +173,43 @@ export class API {
     pedido: CreatePedidoDTO,
     estabalecimentoSlug: string,
   ): Promise<string> {
-    const token = localStorage.getItem("sessionToken");
+    const pedidoMapeado: CreatePedidoDTO = {
+      nomeCliente: pedido.nomeCliente,
+      telefoneCliente: pedido.telefoneCliente,
+      metodoPagamento: pedido.metodoPagamento,
+      observacao: pedido.observacao,
+      endereco: {
+        ufId: pedido.endereco.ufId,
+        cidadeId: pedido.endereco.cidadeId,
+        bairro: pedido.endereco.bairro,
+        numero: pedido.endereco.numero,
+        cep: pedido.endereco.cep,
+        rua: pedido.endereco.rua,
+        complemento: pedido.endereco.complemento,
+      },
+      produtoPedidos: pedido.produtoPedidos!.map((p) => ({
+        produtoId: p.produtoId, // ou p.id, depende do seu modelo
+        quantidade: p.quantidade,
+      })),
+      sessionToken: localStorage.getItem("sessionToken") || "",
+    };
 
-    const response = await api.post("/Pedido", {
-      headers: {
-        sessionToken: token || "",
+    console.log(pedidoMapeado);
+    const response = await api.post(
+      "/Pedido",
+      pedidoMapeado, // body
+      {
+        headers: {
+          sessionToken: pedidoMapeado.sessionToken || "",
+        },
+        params: {
+          estabelecimentoSlug: estabalecimentoSlug,
+        },
       },
-      params: {
-        estabalecimentoSlug,
-      },
-      data: pedido,
-    });
+    );
 
     localStorage.setItem("sessionToken", response.data.sessionToken);
+    console.log(response.data);
     return "Pedido criado com sucesso";
   }
 }

@@ -1,117 +1,41 @@
 "use client";
 
-import {
-  API,
-  EstabelecimentoResponse,
-  HorarioFuncionamentoResponse,
-} from "@/src/Services/API";
 import { Clock, InfoIcon, MapPin, ShoppingBasket } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./navbar.module.css";
+import { useNavbarLogic } from "./useNavbarLogic";
 
 export default function Navbar() {
-  const router = useRouter();
-  const params = useParams();
-  const slug = params?.slug as string;
-
-  const [open, setOpen] = useState(false);
-  const [estabelecimento, setEstabelecimento] =
-    useState<EstabelecimentoResponse | null>(null);
-
-  useEffect(() => {
-    if (!slug) return;
-    const api = new API();
-    api.getEstabelecimento(slug).then(setEstabelecimento);
-  }, [slug]);
-
-  const nomeFantasia = estabelecimento?.nome;
-  const horariosFuncionamento = estabelecimento?.horarioFuncionamento;
-  const telefone = estabelecimento?.telefone;
-  const whatsapp = estabelecimento?.whatsapp;
-  const taxaEntrega = estabelecimento?.taxaEntrega;
-  const pedidoMinimo = estabelecimento?.pedidoMinimo;
-  const endereco = estabelecimento?.endereco;
-  const status = estabelecimento?.status;
-
-  const diasSemana = [
-    "Domingo",
-    "Segunda",
-    "Terça",
-    "Quarta",
-    "Quinta",
-    "Sexta",
-    "Sábado",
-  ];
-
-  const horarioHoje = useMemo(() => {
-    if (!horariosFuncionamento) return null;
-    const hoje = new Date().getDay();
-    const diaAtual = diasSemana[hoje];
-    return horariosFuncionamento.find(
-      (h: HorarioFuncionamentoResponse) => h.dia === diaAtual,
-    );
-  }, [horariosFuncionamento]);
-
-  const handleGoHome = () => {
-    if (!slug) return;
-    router.push(`/estabelecimento/${slug}`);
-  };
-
-  const handleGoToOrders = () => {
-    if (!slug) return;
-    router.push(`/estabelecimento/${slug}/pedidos`);
-  };
-
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      const target = event.target as Node;
-      if (
-        open &&
-        dropdownRef.current &&
-        !dropdownRef.current.contains(target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(target)
-      ) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
-
-  function maskWhatsApp(value: string) {
-    const numbers = value.replace(/\D/g, "");
-    if (numbers.length === 11) {
-      return numbers.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
-    }
-    if (numbers.length === 10) {
-      return numbers.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
-    }
-    return value;
-  }
+  const {
+    open,
+    setOpen,
+    buttonRef,
+    dropdownRef,
+    nome,
+    endereco,
+    horarioHoje,
+    telefone,
+    whatsapp,
+    taxaEntrega,
+    pedidoMinimo,
+    status,
+    handleGoHome,
+    handleGoToOrders,
+    maskWhatsApp,
+  } = useNavbarLogic();
 
   return (
     <nav className={styles.navbar}>
       <button
         ref={buttonRef}
         className={styles.chevronButton}
-        onClick={() => setOpen((prev) => !prev)}
-        aria-label="Mais informações"
+        onClick={() => setOpen((p) => !p)}
       >
         <InfoIcon size={20} className={open ? styles.chevronOpen : ""} />
       </button>
 
       <div className={styles.left_side}>
-        <button
-          className={styles.brandButton}
-          onClick={handleGoHome}
-          aria-label="Página inicial"
-        >
-          <span className={styles.brandName}>{nomeFantasia ?? "Início"}</span>
+        <button className={styles.brandButton} onClick={handleGoHome}>
+          <span className={styles.brandName}>{nome ?? "Início"}</span>
         </button>
 
         <div className={styles.infoContainer}>
@@ -139,11 +63,7 @@ export default function Navbar() {
       </div>
 
       <div className={styles.right_side}>
-        <button
-          aria-label="Pedidos"
-          onClick={handleGoToOrders}
-          className={styles.iconButton}
-        >
+        <button onClick={handleGoToOrders} className={styles.iconButton}>
           0<ShoppingBasket size={20} />
         </button>
       </div>
