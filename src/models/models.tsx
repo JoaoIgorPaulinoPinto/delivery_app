@@ -1,5 +1,3 @@
-import { EnderecoResponse, EstabelecimentoResponse } from "../Services/API";
-
 export interface ProdutoPedido {
   id: number;
   categoria: categoria;
@@ -28,13 +26,13 @@ export interface UsuarioPedido {
   telefone: string;
 }
 
-export interface Pedido {
-  id?: number;
-  produtos: ProdutoPedido[];
-  endereco: EnderecoResponse;
-  observacao: string;
-  metodoPagamentoId: number;
-  status?: { id: number; nome: string };
-  usuario: UsuarioPedido;
-  estabelecimento?: EstabelecimentoResponse;
-}
+// export interface Pedido {
+//   id?: number;
+//   produtos: ProdutoPedido[];
+//   endereco: EnderecoResponse;
+//   observacao: string;
+//   metodoPagamentoId: number;
+//   status?: { id: number; nome: string };
+//   usuario: UsuarioPedido;
+//   estabelecimento?: EstabelecimentoResponse;
+// }

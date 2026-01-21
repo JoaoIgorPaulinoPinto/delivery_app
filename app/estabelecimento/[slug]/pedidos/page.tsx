@@ -1,5 +1,16 @@
-import HomeUI from "./page.ui";
+"use client";
+import { useOrdersPageLogic } from "./page.logic";
+import { OrdersPageUI } from "./page.ui";
+export default function OrdersPage() {
+  const logic = useOrdersPageLogic();
 
-export default function Page() {
-  return <HomeUI />;
+  return (
+    <OrdersPageUI
+      loading={logic.loading}
+      pedidos={logic.pedidos ?? null}
+      formatarEndereco={logic.formatarEndereco}
+      formatCurrency={logic.formatCurrency}
+      calcularTotalPedido={logic.calcularTotalPedido}
+    />
+  );
 }

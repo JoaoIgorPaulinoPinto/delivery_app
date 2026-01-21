@@ -1,101 +1,108 @@
-"use client";
-
-import banner from "@/public/banner.jpg";
-import FinishOrder from "@/src/components/ui/finish-order/finish-order";
-import ProductCard from "@/src/components/ui/product-card/product-card";
-import { ProdutoPedido } from "@/src/models/models";
-import { Search, Settings2 } from "lucide-react";
-import Image from "next/image";
-import { useHomeLogic } from "./page.logic";
+import { EnderecoResponse, PedidoResponse } from "@/src/Services/API";
 import styles from "./page.module.css";
 
-export default function HomeUI() {
-  const {
-    selected,
-    setSelected,
-    categories,
-    loading,
-    error,
-    searchTerm,
-    setSearchTerm,
-    filteredProducts,
-    produtosNoCarrinho,
-    clearCart,
-    isUiLocked,
-    setIsUiLocked,
-  } = useHomeLogic();
+interface OrdersPageUIProps {
+  loading: boolean;
+  pedidos: PedidoResponse[] | null;
+  formatarEndereco: (endereco?: EnderecoResponse) => string;
+  formatCurrency: (value: number) => string;
+  calcularTotalPedido: (p: PedidoResponse) => number;
+}
 
+export function OrdersPageUI({
+  loading,
+  pedidos,
+  formatarEndereco,
+  formatCurrency,
+  calcularTotalPedido,
+}: OrdersPageUIProps) {
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.spinner}></div>
+        <p>Carregando seus pedidos...</p>
       </div>
     );
   }
 
-  if (error) return <p>{error}</p>;
-
   return (
-    <div className={`${styles.main} ${isUiLocked ? styles.blocked : ""}`}>
-      <div className={styles.banner}>
-        <Image src={banner} alt="banner" fill style={{ objectFit: "cover" }} />
+    <div className={styles.main}>
+      <h2 className={styles.title}>Meus Pedidos</h2>
+
+      <div className={styles.cardsContainer}>
+        {pedidos && pedidos.length > 0 ? (
+          pedidos.map((p) => {
+            const total = calcularTotalPedido(p);
+
+            return (
+              <div className={styles.card} key={`order-card-${p.nomeCliente}`}>
+                <div className={styles.header}>
+                  <div className={styles.storeInfo}>
+                    <span className={styles.userName}>{p.nomeCliente}</span>
+                    {/* <span className={styles.orderId}>📦 Pedido #{p.}</span> */}
+
+                    {/* adicioanar retorno do id do pedido tambem
+                    <span className={styles.orderId}>📦 Pedido #{p.id}</span>
+*/}
+                  </div>
+                  {/* <span
+                    className={`${styles.statusBadge} ${
+                      styles[p.status?.nome?.toLowerCase() || ""]
+                    }`}
+                  >
+                    {p.status?.nome}
+                  </span> */}
+                </div>
+
+                <div className={styles.body}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>Qtd</th>
+                        <th>Produto</th>
+                        <th className={styles.textRight}>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {p.produtoPedidos?.map((item, idx) => (
+                        <tr key={`${p}-item-${idx}`}>
+                          <td>{item.quantidade}x</td>
+                          <td>{item.produto}</td>
+                          <td className={styles.textRight}>
+                            {formatCurrency(item.preco * item.quantidade)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {p.observacao && (
+                    <div className={styles.obsSection}>
+                      <strong>Obs:</strong> {p.observacao}
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.footer}>
+                  <div className={styles.addressSection}>
+                    <span className={styles.eta}>
+                      {/* 📍 {formatarEndereco(p.endereco ?? undefined)} */}
+                    </span>
+                  </div>
+                  <div className={styles.priceTotal}>
+                    <span>Total:</span>
+                    <strong>{formatCurrency(total)}</strong>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className={styles.noOrders}>
+            <p>Nenhum pedido encontrado.</p>
+          </div>
+        )}
       </div>
-
-      <div className={styles.filters_line}>
-        <div className={styles.filters_line_content}>
-          {categories.map((c: { id: number; nome: string }) => (
-            <button
-              key={c.id}
-              onClick={() =>
-                selected === c.id ? setSelected(null) : setSelected(c.id)
-              }
-              className={
-                selected === c.id
-                  ? `${styles.filters_line_option} ${styles.filters_line_option_selected}`
-                  : styles.filters_line_option
-              }
-            >
-              {c.nome}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className={styles.search_settings}>
-        <div className={styles.search_bar}>
-          <Search size={16} />
-          <input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            type="text"
-            placeholder="Buscar produtos..."
-          />
-        </div>
-        <Settings2 size={24} />
-      </div>
-
-      <div className={styles.products}>
-        <div
-          style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
-        >
-          {produtosNoCarrinho.length > 0 && (
-            <button className={styles.clear_cart_button} onClick={clearCart}>
-              Limpar
-            </button>
-          )}
-        </div>
-
-        {filteredProducts.map((product: ProdutoPedido) => {
-          const p = produtosNoCarrinho.find(
-            (i: ProdutoPedido) => i.id === product.id,
-          );
-          return <ProductCard key={product.id} {...(p ?? product)} />;
-        })}
-      </div>
-
-      <div className={styles.footer}></div>
-
-      <FinishOrder onOverlayStateChange={(state) => setIsUiLocked(state)} />
     </div>
   );
 }

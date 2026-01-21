@@ -58,6 +58,13 @@ export interface CreatePedidoDTO {
   endereco: CreateEnderecoDTO;
   sessionToken?: string;
 }
+export interface PedidoResponse {
+  nomeCliente?: string;
+  telefoneCliente?: string;
+  metodoPagamento: string;
+  produtoPedidos?: { produto: string; preco: number; quantidade: number }[];
+  observacao?: string;
+}
 
 export interface CreateProdutoPedidoDTO {
   // Complete de acordo com a definição real desse DTO
@@ -211,5 +218,29 @@ export class API {
     localStorage.setItem("sessionToken", response.data.sessionToken);
     console.log(response.data);
     return "Pedido criado com sucesso";
+  }
+
+  public async getPedidos(): Promise<PedidoResponse[]> {
+    const response = await api.get("/Pedido", {
+      headers: {
+        token: localStorage.getItem("sessionToken") || "",
+      },
+    });
+    const produtosResponse: PedidoResponse[] = [];
+    for (const pedido of response.data) {
+      produtosResponse.push({
+        // id: pedido.id,
+        nomeCliente: pedido.nomeCliente,
+        produtoPedidos: pedido.produtos,
+        // endereco: pedido.endereco,
+        observacao: pedido.observacao,
+        metodoPagamento: pedido.metodoPagamentoId,
+        // status: pedido.status,
+        // usuario: pedido.usuario,
+        // estabelecimento: pedido.estabelecimento,
+      });
+    }
+
+    return produtosResponse;
   }
 }
