@@ -10,7 +10,7 @@ export default function Navbar() {
     setOpen,
     buttonRef,
     dropdownRef,
-    nome,
+    nomeFantasia,
     endereco,
     horarioHoje,
     telefone,
@@ -35,7 +35,7 @@ export default function Navbar() {
 
       <div className={styles.left_side}>
         <button className={styles.brandButton} onClick={handleGoHome}>
-          <span className={styles.brandName}>{nome ?? "Início"}</span>
+          <span className={styles.brandName}>{nomeFantasia ?? "Início"}</span>
         </button>
 
         <div className={styles.infoContainer}>

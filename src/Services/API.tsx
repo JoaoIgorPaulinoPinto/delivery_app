@@ -1,11 +1,14 @@
 import axios from "axios";
+import { EnderecoPedido } from "../models/models";
+
+const isDev = process.env.NODE_NODE_ENV === "development";
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: "http://localhost:5000/api/", // Note: .NET HTTPS is usually 5001
   headers: {
     "Content-Type": "application/json",
-    withCredentials: "true",
   },
+  // This bypasses the self-signed certificate error in Node.js
 });
 export interface EnderecoResponse {
   rua: string;
@@ -19,7 +22,7 @@ export interface EnderecoResponse {
 
 export interface CategoriaResponse {
   id: number;
-  categoria: string;
+  nome: string;
 }
 export interface MetodoPagamentoResponse {
   id: number;
@@ -31,16 +34,15 @@ export interface ProdutosResponse {
   descricao: string;
   preco: number;
   imgUrl: string;
-  categoriaId: number;
+  categoria: CategoriaResponse;
 }
 export interface HorarioFuncionamentoResponse {
-  // preencha conforme o DTO real
   dia: string;
   abre: string;
   fecha: string;
 }
 export interface EstabelecimentoResponse {
-  nome?: string;
+  nomeFantasia?: string;
   horarioFuncionamento?: HorarioFuncionamentoResponse[];
   taxaEntrega: number;
   pedidoMinimo: number;
@@ -48,6 +50,7 @@ export interface EstabelecimentoResponse {
   whatsapp?: string;
   endereco: EnderecoResponse;
   status?: string;
+  email?: string;
 }
 export interface CreatePedidoDTO {
   nomeCliente?: string;
@@ -59,11 +62,14 @@ export interface CreatePedidoDTO {
   sessionToken?: string;
 }
 export interface PedidoResponse {
+  id: number;
   nomeCliente?: string;
   telefoneCliente?: string;
   metodoPagamento: string;
   produtoPedidos?: { produto: string; preco: number; quantidade: number }[];
   observacao?: string;
+  endereco: EnderecoPedido;
+  status: string;
 }
 
 export interface CreateProdutoPedidoDTO {
@@ -88,94 +94,47 @@ export class API {
   ): Promise<EstabelecimentoResponse> {
     const response = await api.get("Estabelecimento", {
       params: {
-        estabelecimentoSlug: slug,
+        slug: slug,
       },
     });
-    const res: EstabelecimentoResponse = {
-      nome: response.data.nome,
-      horarioFuncionamento: response.data.horarioFuncionamento,
-      taxaEntrega: response.data.taxaEntrega,
-      pedidoMinimo: response.data.pedidoMinimo,
-      telefone: response.data.telefone,
-      whatsapp: response.data.whatsapp,
-      endereco: {
-        bairro: response.data.endereco.bairro,
-        cep: response.data.endereco.cep,
-        cidade: response.data.endereco.cidade,
-        complemento: response.data.endereco.complemento,
-        numero: response.data.endereco.numero,
-        rua: response.data.endereco.rua,
-        uf: response.data.endereco.uf,
-      },
-      status: response.data.status,
-    };
-    console.log(res);
-    return res;
+    console.log(response.data);
+    return response.data;
   }
 
-  //pegar as categorias de produtos
   public async getCategorias(
     estabelecimentoSlug: string,
   ): Promise<CategoriaResponse[]> {
     const response = await api.get("/Categoria", {
       params: {
-        estabelecimentoSlug,
+        slug: estabelecimentoSlug,
       },
     });
-
-    const categoriaResponse: CategoriaResponse[] = response.data.map(
-      (categoria: CategoriaResponse) => ({
-        id: categoria.id,
-        categoria: categoria.categoria,
-      }),
-    );
-    console.log(categoriaResponse);
-    return categoriaResponse;
+    return response.data;
   }
-  //pegar as metodos de pagamento
   public async getMetodosPagamento(
     estabelecimentoSlug: string,
   ): Promise<MetodoPagamentoResponse[]> {
     const response = await api.get("/MetodoPagamento", {
       params: {
-        estabelecimentoSlug,
+        slug: estabelecimentoSlug,
       },
     });
-
-    const metodoPagamentoResponse: MetodoPagamentoResponse[] =
-      response.data.map((metodoPagamento: MetodoPagamentoResponse) => ({
-        id: metodoPagamento.id,
-        nome: metodoPagamento.nome,
-      }));
-    console.log(metodoPagamentoResponse);
-    return metodoPagamentoResponse;
+    console.log(response.data);
+    return response.data;
   }
 
-  //pegar produtos
   public async getProdutos(
     estabelecimentoSlug: string,
   ): Promise<ProdutosResponse[]> {
     const response = await api.get("/Produto", {
       params: {
-        estabelecimentoSlug: estabelecimentoSlug,
+        slug: estabelecimentoSlug,
       },
     });
-    const produtosResponse: ProdutosResponse[] = [];
-    for (const produto of response.data) {
-      produtosResponse.push({
-        id: produto.id,
-        nome: produto.nome,
-        descricao: produto.descricao,
-        preco: produto.preco,
-        imgUrl: produto.imgUrl,
-        categoriaId: produto.categoriaId,
-      });
-    }
-    console.log(produtosResponse);
-    return produtosResponse;
+    console.log(response.data);
+    return response.data;
   }
 
-  //pegar as categorias de produtos
   public async CriarPedidos(
     pedido: CreatePedidoDTO,
     estabalecimentoSlug: string,
@@ -229,15 +188,13 @@ export class API {
     const produtosResponse: PedidoResponse[] = [];
     for (const pedido of response.data) {
       produtosResponse.push({
-        // id: pedido.id,
+        id: pedido.id,
         nomeCliente: pedido.nomeCliente,
         produtoPedidos: pedido.produtos,
-        // endereco: pedido.endereco,
+        endereco: pedido.endereco,
         observacao: pedido.observacao,
         metodoPagamento: pedido.metodoPagamentoId,
-        // status: pedido.status,
-        // usuario: pedido.usuario,
-        // estabelecimento: pedido.estabelecimento,
+        status: pedido.status,
       });
     }
 

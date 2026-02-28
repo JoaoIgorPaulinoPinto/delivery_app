@@ -24,7 +24,7 @@ export function useNavbarLogic() {
   }, [slug]);
 
   const {
-    nome,
+    nomeFantasia,
     horarioFuncionamento,
     telefone,
     whatsapp,
@@ -97,7 +97,7 @@ export function useNavbarLogic() {
     setOpen,
     buttonRef,
     dropdownRef,
-    nome,
+    nomeFantasia,
     endereco,
     horarioHoje,
     telefone,

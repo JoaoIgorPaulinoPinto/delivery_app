@@ -53,60 +53,20 @@ Ele consome uma **API REST desenvolvida em ASP.NET Web API**, sendo responsável
 1. Clone o repositório:
 git clone https://github.com/JoaoIgorPaulinoPinto/delivery_app.git
 
-csharp
-Copy code
-
 2. Instale as dependências:
 npm install
-
-ou
-yarn install
-
-markdown
-Copy code
 
 3. Crie o arquivo de ambiente:
 .env.local
 
-makefile
-Copy code
-
 Exemplo:
 NEXT_PUBLIC_API_URL=http://localhost:5001
-
-markdown
-Copy code
 
 4. Execute o projeto:
 npm run dev
 
-ou
-yarn dev
-
-markdown
-Copy code
-
 5. Acesse no navegador:
 http://localhost:3000
-
-yaml
-Copy code
-
----
-
-## Estrutura do Projeto
-
-delivery_app/
-├── app/
-├── components/
-├── services/
-├── store/
-├── public/
-├── styles/
-└── README.md
-
-yaml
-Copy code
 
 ---
 
@@ -115,14 +75,14 @@ Copy code
 Este frontend consome a API desenvolvida em ASP.NET Web API.
 
 Repositório do backend:
-https://github.com/JoaoIgorPaulinoPinto/delivery_app-api
+[https://github.com/JoaoIgorPaulinoPinto/delivery_app-api](https://github.com/JoaoIgorPaulinoPinto/comaagora_api)
 
 ---
 
 ## Autor
 
 João Igor Paulino Pinto  
-GitHub: https://github.com/JoaoIgorPaulinoPinto
+GitHub: [https://github.com/JoaoIgorPaulinoPinto](https://github.com/JoaoIgorPaulinoPinto)
 
 ---
 

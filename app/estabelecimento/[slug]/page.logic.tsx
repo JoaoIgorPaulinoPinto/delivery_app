@@ -1,6 +1,6 @@
 "use client";
 
-import { API } from "@/src/Services/API";
+import { API, CategoriaResponse } from "@/src/Services/API";
 import { ProdutoPedido } from "@/src/models/models";
 import { useCarrinho } from "@/src/store/Carrinho";
 import { useParams } from "next/navigation";
@@ -11,9 +11,7 @@ export function useHomeLogic() {
   const apiInstance = useMemo(() => new API(), []);
 
   const [selected, setSelected] = useState<number | null>(null);
-  const [categories, setCategories] = useState<{ id: number; nome: string }[]>(
-    [],
-  );
+  const [categories, setCategories] = useState<CategoriaResponse[]>([]);
   const [products, setProducts] = useState<ProdutoPedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,19 +49,14 @@ export function useHomeLogic() {
         preco: p.preco,
         imgUrl: p.imgUrl,
         categoria: {
-          id: p.categoriaId,
-          nome: categoriesRes.find((c) => c.id === p.categoriaId)?.categoria,
+          id: p.categoria.id,
+          categoria: p.categoria.nome,
         },
         quantidade: 0,
       })),
     );
 
-    setCategories(
-      categoriesRes.map((c) => ({
-        id: c.id,
-        nome: c.categoria,
-      })),
-    );
+    setCategories(categoriesRes);
   };
 
   useEffect(() => {
