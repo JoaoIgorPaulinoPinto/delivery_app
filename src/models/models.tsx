@@ -13,8 +13,8 @@ export interface categoria {
 }
 export interface EnderecoPedido {
   cep: string;
-  uf: string;
-  cidade: string;
+  ufId: number;
+  cidadeId: number;
   rua: string;
   numero: string;
   bairro: string;

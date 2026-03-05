@@ -1,5 +1,4 @@
 import axios from "axios";
-import { EnderecoPedido } from "../models/models";
 
 const isDev = process.env.NODE_NODE_ENV === "development";
 
@@ -10,12 +9,13 @@ export const api = axios.create({
   },
   // This bypasses the self-signed certificate error in Node.js
 });
+
 export interface EnderecoResponse {
   rua: string;
   numero: string;
   bairro: string;
-  cidade: string;
-  uf: string;
+  cidadeId: number;
+  ufId: number;
   cep: string;
   complemento?: string;
 }
@@ -24,10 +24,12 @@ export interface CategoriaResponse {
   id: number;
   nome: string;
 }
+
 export interface MetodoPagamentoResponse {
   id: number;
   nome: string;
 }
+
 export interface ProdutosResponse {
   id: number;
   nome: string;
@@ -36,11 +38,13 @@ export interface ProdutosResponse {
   imgUrl: string;
   categoria: CategoriaResponse;
 }
+
 export interface HorarioFuncionamentoResponse {
   dia: string;
   abre: string;
   fecha: string;
 }
+
 export interface EstabelecimentoResponse {
   nomeFantasia?: string;
   horarioFuncionamento?: HorarioFuncionamentoResponse[];
@@ -52,6 +56,7 @@ export interface EstabelecimentoResponse {
   status?: string;
   email?: string;
 }
+
 export interface CreatePedidoDTO {
   nomeCliente?: string;
   telefoneCliente?: string;
@@ -61,6 +66,32 @@ export interface CreatePedidoDTO {
   endereco: CreateEnderecoDTO;
   sessionToken?: string;
 }
+
+interface CreatePedidoRequestBody {
+  usuario: {
+    nome: string;
+    telefone: string;
+  };
+  endereco: {
+    rua: string;
+    numero: string;
+    bairro: string;
+    cidadeId: number;
+    ufId: number;
+    cep: string;
+    complemento: string;
+    cidade?: number;
+    uf?: number;
+  };
+  produtos: {
+    produtoId: number;
+    quantidade: number;
+  }[];
+  metodoPagamentoId: number;
+  observacao: string;
+  clientKey?: string;
+}
+
 export interface PedidoResponse {
   id: number;
   nomeCliente?: string;
@@ -68,12 +99,11 @@ export interface PedidoResponse {
   metodoPagamento: string;
   produtoPedidos?: { produto: string; preco: number; quantidade: number }[];
   observacao?: string;
-  endereco: EnderecoPedido;
+  endereco: EnderecoResponse;
   status: string;
 }
 
 export interface CreateProdutoPedidoDTO {
-  // Complete de acordo com a definição real desse DTO
   produtoId: number;
   quantidade: number;
 }
@@ -88,7 +118,33 @@ export interface CreateEnderecoDTO {
   complemento?: string;
 }
 
+export interface EstadoResponse {
+  id: number;
+  nome: string;
+  sigla?: string;
+}
+
+export interface CidadeResponse {
+  id: number;
+  nome: string;
+  estadoId?: number;
+}
+
 export class API {
+  private mapEndereco(data: unknown): EnderecoResponse {
+    const endereco = (data ?? {}) as Record<string, unknown>;
+
+    return {
+      rua: String(endereco.rua ?? ""),
+      numero: String(endereco.numero ?? ""),
+      bairro: String(endereco.bairro ?? ""),
+      cidadeId: Number(endereco.cidadeId ?? endereco.cidade ?? 0),
+      ufId: Number(endereco.ufId ?? endereco.uf ?? 0),
+      cep: String(endereco.cep ?? ""),
+      complemento: String(endereco.complemento ?? ""),
+    };
+  }
+
   public async getEstabelecimento(
     slug: string,
   ): Promise<EstabelecimentoResponse> {
@@ -97,8 +153,11 @@ export class API {
         slug: slug,
       },
     });
-    console.log(response.data);
-    return response.data;
+
+    return {
+      ...response.data,
+      endereco: this.mapEndereco(response.data?.endereco),
+    };
   }
 
   public async getCategorias(
@@ -111,6 +170,7 @@ export class API {
     });
     return response.data;
   }
+
   public async getMetodosPagamento(
     estabelecimentoSlug: string,
   ): Promise<MetodoPagamentoResponse[]> {
@@ -119,7 +179,6 @@ export class API {
         slug: estabelecimentoSlug,
       },
     });
-    console.log(response.data);
     return response.data;
   }
 
@@ -131,70 +190,112 @@ export class API {
         slug: estabelecimentoSlug,
       },
     });
-    console.log(response.data);
     return response.data;
+  }
+
+  public async getEstados(): Promise<EstadoResponse[]> {
+    const response = await api.get("/Localizacao/estados");
+    const estados = Array.isArray(response.data) ? response.data : [];
+
+    return estados.map((estado: Record<string, unknown>) => ({
+      id: Number(estado.id ?? 0),
+      nome: String(estado.nome ?? estado.descricao ?? ""),
+      sigla: String(estado.sigla ?? estado.uf ?? ""),
+    }));
+  }
+
+  public async getCidades(estadoId: number): Promise<CidadeResponse[]> {
+    const response = await api.get("/Localizacao/cidades", {
+      params: {
+        estadoId,
+      },
+    });
+    const cidades = Array.isArray(response.data) ? response.data : [];
+
+    return cidades.map((cidade: Record<string, unknown>) => ({
+      id: Number(cidade.id ?? 0),
+      nome: String(cidade.nome ?? cidade.descricao ?? ""),
+      estadoId: Number(cidade.estadoId ?? cidade.ufId ?? estadoId),
+    }));
   }
 
   public async CriarPedidos(
     pedido: CreatePedidoDTO,
-    estabalecimentoSlug: string,
+    estabelecimentoSlug: string,
   ): Promise<string> {
-    const pedidoMapeado: CreatePedidoDTO = {
-      nomeCliente: pedido.nomeCliente,
-      telefoneCliente: pedido.telefoneCliente,
-      metodoPagamento: pedido.metodoPagamento,
-      observacao: pedido.observacao,
-      endereco: {
-        ufId: pedido.endereco.ufId,
-        cidadeId: pedido.endereco.cidadeId,
-        bairro: pedido.endereco.bairro,
-        numero: pedido.endereco.numero,
-        cep: pedido.endereco.cep,
-        rua: pedido.endereco.rua,
-        complemento: pedido.endereco.complemento,
+    const clientKey = localStorage.getItem("clientKey") || "";
+
+    const pedidoMapeado: CreatePedidoRequestBody = {
+      usuario: {
+        nome: pedido.nomeCliente || "",
+        telefone: pedido.telefoneCliente || "",
       },
-      produtoPedidos: pedido.produtoPedidos!.map((p) => ({
-        produtoId: p.produtoId, // ou p.id, depende do seu modelo
+      endereco: {
+        rua: pedido.endereco.rua || "",
+        numero: pedido.endereco.numero || "",
+        bairro: pedido.endereco.bairro || "",
+        cidadeId: pedido.endereco.cidadeId,
+        ufId: pedido.endereco.ufId,
+        // Compatibilidade durante transicao do backend.
+        cidade: pedido.endereco.cidadeId,
+        uf: pedido.endereco.ufId,
+        cep: pedido.endereco.cep || "",
+        complemento: pedido.endereco.complemento || "",
+      },
+      produtos: (pedido.produtoPedidos || []).map((p) => ({
+        produtoId: p.produtoId,
         quantidade: p.quantidade,
       })),
-      sessionToken: localStorage.getItem("sessionToken") || "",
+      metodoPagamentoId: pedido.metodoPagamento,
+      observacao: pedido.observacao || "",
     };
 
-    console.log(pedidoMapeado);
-    const response = await api.post(
-      "/Pedido",
-      pedidoMapeado, // body
-      {
-        headers: {
-          sessionToken: pedidoMapeado.sessionToken || "",
-        },
-        params: {
-          estabelecimentoSlug: estabalecimentoSlug,
-        },
+    const response = await api.post("/Pedido", pedidoMapeado, {
+      params: {
+        slug: estabelecimentoSlug,
       },
-    );
-
-    localStorage.setItem("sessionToken", response.data.sessionToken);
-    console.log(response.data);
+      headers: {
+        clientKey: clientKey,
+      },
+    });
+    if (response.data.clientKey) {
+      localStorage.setItem("clientKey", response.data.clientKey);
+    }
     return "Pedido criado com sucesso";
   }
 
-  public async getPedidos(): Promise<PedidoResponse[]> {
-    const response = await api.get("/Pedido", {
+  public async getPedidos(slug: string): Promise<PedidoResponse[]> {
+    const response = await api.get("/Pedido/cliente", {
       headers: {
-        token: localStorage.getItem("sessionToken") || "",
+        accept: "*/*",
+        clientKey: localStorage.getItem("clientKey") || "",
+        slug,
       },
     });
+
     const produtosResponse: PedidoResponse[] = [];
+
     for (const pedido of response.data) {
+      const statusNome =
+        typeof pedido.status === "string"
+          ? pedido.status
+          : String(pedido.status?.nome ?? "");
+
+      const produtos = Array.isArray(pedido.produtos) ? pedido.produtos : [];
+
       produtosResponse.push({
         id: pedido.id,
-        nomeCliente: pedido.nomeCliente,
-        produtoPedidos: pedido.produtos,
-        endereco: pedido.endereco,
+        nomeCliente: pedido.nomeCliente ?? pedido.nome,
+        telefoneCliente: pedido.telefoneCliente ?? pedido.telefone,
+        produtoPedidos: produtos.map((item: Record<string, unknown>) => ({
+          produto: String(item.produto ?? item.nome ?? ""),
+          preco: Number(item.preco ?? 0),
+          quantidade: Number(item.quantidade ?? 0),
+        })),
+        endereco: this.mapEndereco(pedido.endereco),
         observacao: pedido.observacao,
-        metodoPagamento: pedido.metodoPagamentoId,
-        status: pedido.status,
+        metodoPagamento: String(pedido.metodoPagamentoId ?? ""),
+        status: statusNome,
       });
     }
 

@@ -1,56 +1,53 @@
-/* ---------- OVERLAY ---------- */
-.confirmationOverlay {
+﻿.confirmationOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(2px);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  z-index: 2000;
-  animation: fadeIn 0.25s ease;
+  align-items: center;
+  z-index: 2100;
+  animation: fadeIn 0.2s ease;
 }
 
-/* ---------- MODAL ---------- */
 .confirmationContainer {
-  width: 92%;
-  background: var(--background-color-1);
-  padding: var(--space-xl); /* reduzido */
-  border-radius: var(--radius-xs);
-  box-shadow: 0 -3px 16px rgba(0, 0, 0, 0.18);
-  animation: slideUp 0.3s ease;
-  position: absolute;
-  top: 22%; /* levemente mais alto */
+  width: min(540px, 94vw);
+  background: linear-gradient(165deg, var(--background-color-2), var(--background-color-3));
+  padding: var(--size-sm);
+  border-radius: var(--radius-sm);
+  border: var(--def-border);
+  box-shadow: var(--def-shadow-1);
+  position: relative;
 }
 
-/* ---------- FECHAR ---------- */
 .modalCloseButton {
   position: absolute;
-  top: var(--space-sm);
-  right: var(--space-sm);
-  background: none;
-  border: none;
+  top: var(--space-md);
+  right: var(--space-md);
+  background: rgba(255, 255, 255, 0.08);
+  border: var(--def-border);
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
   color: var(--text-color-2);
   cursor: pointer;
 }
 
-/* ---------- TÍTULO ---------- */
 .title {
-  font-size: var(--font-size-lg); /* reduzido */
-  font-weight: bold;
-  color: var(--text-color-1);
-  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-xlg);
+  font-weight: 800;
+  margin-bottom: var(--space-lg);
 }
 
-/* ---------- TOTAL ---------- */
 .totalBox {
-  background: var(--background-color-2);
-  padding: var(--space-sm); /* reduzido */
+  background: rgba(255, 255, 255, 0.04);
+  border: var(--def-border);
+  padding: var(--space-md);
   border-radius: var(--radius-xs);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-weight: bold;
+  font-weight: 700;
   margin-bottom: var(--space-md);
 }
 
@@ -59,113 +56,78 @@
 }
 
 .totalBox strong {
-  color: var(--background-color-5);
+  color: var(--text-color-5);
 }
 
-/* ---------- ENDEREÇO ---------- */
 .addressBox {
-  background: var(--background-color-2);
-  padding: var(--space-md); /* reduzido */
+  background: rgba(255, 255, 255, 0.04);
+  border: var(--def-border);
+  padding: var(--space-md);
   border-radius: var(--radius-xs);
   margin-bottom: var(--space-md);
 }
 
 .addressTitle {
-  font-weight: bold;
+  font-weight: 700;
   color: var(--text-color-1);
-  margin-bottom: var(--space-xxs);
+  margin-bottom: var(--space-xs);
   font-size: var(--font-size-md);
 }
 
 .addressText {
   color: var(--text-color-2);
-  line-height: 1.25;
+  line-height: 1.3;
   font-size: var(--font-size-md);
 }
 
-/* ---------- AVISO ---------- */
 .warningText {
-  font-size: var(--font-size-md); /* menor */
-  background: #ffe6e6;
-  border-left: 3px solid #d9534f; /* menor */
-  padding: var(--space-sm); /* reduzido */
+  font-size: var(--font-size-md);
+  background: rgba(255, 122, 26, 0.14);
+  border-left: 3px solid rgba(255, 122, 26, 0.65);
+  padding: var(--space-md);
   border-radius: var(--radius-xs);
-  color: #b8423e;
-  font-weight: bold;
+  color: var(--text-color-1);
   margin-bottom: var(--space-md);
-  line-height: 1.3;
 }
 
-/* ---------- INPUTS ---------- */
 .modalInputGroup {
   display: flex;
   flex-direction: column;
-  margin-bottom: var(--space-md); /* reduzido */
+  margin-bottom: var(--space-md);
 }
 
 .modalInputGroup label {
-  font-weight: bold;
-  color: var(--text-color-1);
-  margin-bottom: var(--space-sm);
+  font-weight: 700;
+  color: var(--text-color-4);
+  margin-bottom: var(--space-xs);
   font-size: var(--font-size-md);
 }
 
 .modalInputGroup input {
-  padding: var(--space-sm); /* reduzido */
-  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  border-radius: var(--radius-xs);
   border: var(--def-border);
-  background: var(--background-color-2);
-  color: var(--text-color-2);
-  font-size: var(--font-size-md);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-color-1);
 }
 
-/* ---------- BOTÃO ---------- */
 .modalConfirmButton {
   width: 100%;
-  padding: var(--space-md); /* reduzido */
-  background: var(--background-color-4);
+  padding: 0.85rem;
+  background: linear-gradient(135deg, var(--background-color-4), #d8620f);
   color: var(--text-color-0);
   border: none;
   border-radius: var(--radius-xs);
-  font-size: var(--font-size-lg); /* reduzido */
-  font-weight: bold;
+  font-size: var(--font-size-lg);
+  font-weight: 800;
   cursor: pointer;
-  transition: transform 0.2s ease;
 }
 
-.modalConfirmButton:active {
-  transform: scale(0.97);
-}
-
-/* ---------- ANIMAÇÕES ---------- */
 @keyframes fadeIn {
   from {
-    background: rgba(0, 0, 0, 0);
-  }
-  to {
-    background: rgba(0, 0, 0, 0.4);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(40px); /* reduzido */
     opacity: 0;
   }
   to {
-    transform: translateY(0);
     opacity: 1;
-  }
-}
-
-/* ---------- MOBILE ---------- */
-@media (max-width: 380px) {
-  .confirmationContainer {
-    padding: var(--space-lg);
-    top: 18%;
-  }
-
-  .modalConfirmButton {
-    padding: var(--space-sm);
   }
 }

@@ -1,4 +1,5 @@
 "use client";
+
 import { EnderecoPedido } from "@/src/models/models";
 import { useUsuario } from "@/src/store/Usuario";
 import { X } from "lucide-react";
@@ -9,6 +10,10 @@ import styles from "./confirmation-modal.module.css";
 
 interface ConfirmationModalProps {
   endereco?: EnderecoPedido | null;
+  localizacao?: {
+    cidadeNome?: string;
+    estadoNome?: string;
+  };
   total: string;
   isOpen: boolean;
   onClose: () => void;
@@ -17,6 +22,7 @@ interface ConfirmationModalProps {
 
 export default function ConfirmationModal({
   endereco,
+  localizacao,
   total,
   isOpen,
   onClose,
@@ -28,7 +34,6 @@ export default function ConfirmationModal({
   const [userPhone, setUserPhone] = useState(usuario.telefone || "");
   const [obs, setObs] = useState("");
 
-  /* =================== PREFILL DO USUÁRIO =================== */
   const initializedRef = useRef(false);
 
   useEffect(() => {
@@ -49,7 +54,6 @@ export default function ConfirmationModal({
       return;
     }
 
-    // 💾 Salva os dados do usuário no store (persistente)
     setUsuario({
       nome: userName,
       telefone: userPhone,
@@ -68,7 +72,7 @@ export default function ConfirmationModal({
           <X size={20} />
         </button>
 
-        <div className={styles.title}>Confirmação do Pedido</div>
+        <div className={styles.title}>Confirmacao do Pedido</div>
 
         <div className={styles.totalBox}>
           <span>Total:</span>
@@ -77,9 +81,11 @@ export default function ConfirmationModal({
 
         {endereco && (
           <div className={styles.addressBox}>
-            <div className={styles.addressTitle}>Endereço de Entrega</div>
+            <div className={styles.addressTitle}>Endereco de Entrega</div>
             <div className={styles.addressText}>
-              {`${endereco.rua}, ${endereco.numero} - ${endereco.cidade}/${endereco.uf}`}
+              {`${endereco.rua}, ${endereco.numero} - ${
+                localizacao?.cidadeNome || endereco.cidadeId
+              }/${localizacao?.estadoNome || endereco.ufId}`}
             </div>
           </div>
         )}
@@ -101,13 +107,13 @@ export default function ConfirmationModal({
             mask="_"
             value={userPhone}
             onValueChange={(values) => {
-              setUserPhone(values.value); // só números
+              setUserPhone(values.value);
             }}
           />
         </div>
 
         <div className={styles.modalInputGroup}>
-          <label>Observação</label>
+          <label>Observacao</label>
           <input
             type="text"
             value={obs}
@@ -117,7 +123,7 @@ export default function ConfirmationModal({
         </div>
 
         <div className={styles.warningText}>
-          ⚠️ Confira seus dados antes de confirmar. Seu pedido será enviado após
+          Confira seus dados antes de confirmar. Seu pedido sera enviado apos
           clicar em <b>Confirmar Pedido</b>.
         </div>
 

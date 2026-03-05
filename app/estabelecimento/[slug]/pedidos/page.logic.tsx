@@ -17,7 +17,7 @@ export function useOrdersPageLogic() {
     const fetchData = async () => {
       if (!slug) return;
       try {
-        const data = await apiInstance.getPedidos();
+        const data = await apiInstance.getPedidos(slug);
         setPedidos(data);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -31,8 +31,8 @@ export function useOrdersPageLogic() {
 
   const formatarEndereco = (endereco?: EnderecoResponse) => {
     if (!endereco) return "Endereço não informado";
-    const { rua, numero, bairro, cidade } = endereco;
-    return `${rua}, ${numero} - ${bairro}, ${cidade}`;
+    const { rua, numero, bairro, cidadeId, ufId } = endereco;
+    return `${rua}, ${numero} - ${bairro}, ${cidadeId}/${ufId}`;
   };
 
   const formatCurrency = (value: number) =>
@@ -66,3 +66,5 @@ export function useOrdersPageLogic() {
     calcularTotalPedido,
   };
 }
+
+

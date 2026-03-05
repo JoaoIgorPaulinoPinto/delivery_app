@@ -1,12 +1,13 @@
-// app/not-found.tsx
+﻿import styles from "./not-found.module.css";
+
 export default function NotFound() {
   return (
-    <div style={{ padding: 40 }}>
-      <h1 style={{ fontSize: "40px", color: "#110404ff" }}>404</h1>
-      <p>Estabelecimento não encontrado</p>
-      <p style={{ fontSize: "12px", fontStyle: "italic" }}>
-        Tente entrar com um link válido.
-      </p>
+    <div className={styles.main}>
+      <div className={styles.card}>
+        <h1 className={styles.code}>404</h1>
+        <p className={styles.title}>Estabelecimento nao encontrado</p>
+        <p className={styles.hint}>Tente abrir novamente usando um link valido.</p>
+      </div>
     </div>
   );
 }

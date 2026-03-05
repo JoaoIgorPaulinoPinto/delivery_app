@@ -1,93 +1,112 @@
-.confirmationOverlay {
+﻿.confirmationOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(2, 5, 11, 0.62);
   backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
-  align-items: center; /* Centralizado melhor */
+  align-items: center;
   z-index: 2000;
 }
 
 .confirmationContainer {
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh; /* Não deixa o modal sair da tela */
-  background: #fff;
-  padding: 24px;
-  border-radius: 12px;
+  width: min(560px, 94vw);
+  max-height: 90vh;
+  background: linear-gradient(165deg, var(--background-color-2), var(--background-color-3));
+  border: var(--def-border);
+  padding: var(--size-sm);
+  border-radius: var(--radius-sm);
   position: relative;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--def-shadow-1);
+}
+
+.title {
+  font-size: var(--font-size-xlg);
+  font-weight: 800;
+  margin-bottom: var(--space-lg);
 }
 
 .scrollableContent {
-  overflow-y: auto; /* Conteúdo rolável se for grande */
-  padding-right: 5px;
-  margin-bottom: 20px;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: var(--space-lg);
 }
 
 .row {
   display: flex;
-  gap: 12px;
+  gap: var(--space-md);
 }
 
-.flex1 {
-  flex: 1;
-}
-.flex2 {
-  flex: 2;
-}
-.flex3 {
-  flex: 3;
-}
+.flex1 { flex: 1; }
+.flex2 { flex: 2; }
+.flex3 { flex: 3; }
 
 .modalInputGroup {
   display: flex;
   flex-direction: column;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-md);
 }
 
 .modalInputGroup label {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #333;
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+  color: var(--text-color-4);
 }
 
 .modalInputGroup input,
-.modalSelect {
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 16px;
-  outline: none;
+.modalSelect,
+.modalInput {
+  padding: 0.7rem 0.8rem;
+  border-radius: var(--radius-xs);
+  border: var(--def-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-color-1);
+}
+
+.modalInputGroup input::placeholder {
+  color: var(--text-color-2);
 }
 
 .modalSelect:disabled {
-  background: #f5f5f5;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
 .modalConfirmButton {
   width: 100%;
-  padding: 16px;
-  background: #28a745; /* Verde */
-  color: white;
+  padding: 0.85rem;
+  background: linear-gradient(135deg, var(--background-color-5), #188d4b);
+  color: var(--text-color-0);
   border: none;
-  border-radius: 8px;
-  font-size: 18px;
-  font-weight: bold;
+  border-radius: var(--radius-xs);
+  font-size: var(--font-size-lg);
+  font-weight: 800;
   cursor: pointer;
 }
 
 .modalCloseButton {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  background: none;
-  border: none;
+  top: var(--space-md);
+  right: var(--space-md);
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: var(--def-border);
   cursor: pointer;
-  color: #666;
+  color: var(--text-color-1);
+}
+
+@media (max-width: 640px) {
+  .confirmationContainer {
+    padding: var(--space-xl);
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 0;
+  }
 }

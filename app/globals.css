@@ -1,53 +1,19 @@
-/* RESET/NORMALIZAÇÃO BÁSICA */
-
-/* 1. Use o border-box para o modelo de caixa ser intuitivo */
-*,
+﻿*,
 *::before,
 *::after {
   box-sizing: border-box;
 }
+
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
-img,
-picture,
-video,
-canvas,
-svg {
-  max-width: 100%;
-}
-
-/* 2. Remova margem e padding padrão para começar do zero */
-body,
-h1,
-h2,
-h3,
-h4,
-p,
-figure,
-blockquote,
-dl,
-dd {
+html,
+body {
   margin: 0;
   padding: 0;
 }
-:focus {
-  outline: none;
-}
-/* 3. Definir o tamanho de fonte base no elemento raiz (útil para responsividade) */
-html {
-  font-size: 100%; /* Geralmente 16px */
-}
 
-/* 4. Estilos básicos para o corpo do documento */
-body {
-  line-height: 1.5; /* Altura de linha legível */
-  -webkit-font-smoothing: antialiased; /* Suavização de fonte */
-  /* Adicione sua fonte padrão aqui, ex: font-family: 'Inter', sans-serif; */
-}
-
-/* 5. Estilos para evitar problemas com imagens, mídia e SVGs */
 img,
 picture,
 video,
@@ -57,13 +23,11 @@ svg {
   max-width: 100%;
 }
 
-/* 6. Remova a decoração de texto em links */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-/* 7. Garanta que inputs, textareas e botões herdem a fonte */
 input,
 button,
 textarea,
@@ -71,7 +35,95 @@ select {
   font: inherit;
 }
 
-/* 8. Garante que elementos de bloco fiquem em bloco */
+:root {
+  --background-color-1: #0f1115;
+  --background-color-2: #181c22;
+  --background-color-3: #232935;
+  --background-color-4: #ff7a1a;
+  --background-color-5: #24b36b;
+  --background-color-6: #10141b;
+  --background-color-7: #c63939;
+
+  --text-color-0: #ffffff;
+  --text-color-1: #e7ebf2;
+  --text-color-2: #a8b3c7;
+  --text-color-3: #ff9d54;
+  --text-color-4: #c8d2e5;
+  --text-color-5: #30cc7d;
+  --text-color-6: #0f1115;
+
+  --font-size-xs: 0.5rem;
+  --font-size-sm: 0.625rem;
+  --font-size-sl: 0.75rem;
+  --font-size-md: 0.875rem;
+  --font-size-lg: 1rem;
+  --font-size-xlg: 1.25rem;
+  --font-size-xxl: 1.65rem;
+
+  --size-xxs: 0.25rem;
+  --size-xs: 0.5rem;
+  --size-sm: 1rem;
+  --size-md: 1.5rem;
+  --size-lg: 2rem;
+  --size-xlg: 2.5rem;
+  --size-xxl: 3rem;
+
+  --space-xxs: 0.25rem;
+  --space-xs: 0.375rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+  --space-xl: 1.25rem;
+
+  --radius-xs: 0.65rem;
+  --radius-sm: 0.9rem;
+  --radius-md: 1.25rem;
+  --radius-lg: 2rem;
+  --radius-xl: 999px;
+
+  --def-border: 1px solid rgba(255, 255, 255, 0.1);
+  --def-shadow-1: 0 10px 30px rgba(0, 0, 0, 0.28);
+}
+
+:root[data-theme="light"] {
+  --background-color-1: #f3f5f9;
+  --background-color-2: #ffffff;
+  --background-color-3: #e8edf5;
+  --background-color-4: #f06a00;
+  --background-color-5: #189a55;
+  --background-color-6: #fafbfd;
+  --background-color-7: #ba2d2d;
+
+  --text-color-0: #ffffff;
+  --text-color-1: #161a22;
+  --text-color-2: #586174;
+  --text-color-3: #c55f14;
+  --text-color-4: #2b3240;
+  --text-color-5: #158c4d;
+  --text-color-6: #111723;
+
+  --def-border: 1px solid rgba(15, 20, 28, 0.1);
+  --def-shadow-1: 0 12px 25px rgba(14, 20, 30, 0.08);
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  color: var(--text-color-1);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 122, 26, 0.12), transparent 35%),
+    radial-gradient(
+      circle at 100% 100%,
+      rgba(36, 179, 107, 0.12),
+      transparent 30%
+    ),
+    var(--background-color-1);
+  font-family:
+    "Space Grotesk", "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+}
+
 p,
 h1,
 h2,
@@ -79,111 +131,44 @@ h3,
 h4,
 h5,
 h6 {
+  margin: 0;
   overflow-wrap: break-word;
 }
 
-:root {
-  --background-color-1: #dbdbdb;
-  --background-color-2: #fefefe;
-  --background-color-3: #e4e4e4;
-  --background-color-4: #f78923
-  --background-color-5: #1faa59;
-  --background-color-6: #f78923;
-
-  --text-color-0: #fff;
-  --text-color-1: #161616;
-  --text-color-2: #555;
-  --text-color-3: #f78923;
-  --text-color-4: #fff;
-  --text-color-5: #1faa59;
-  --text-color-6: #161616;
-
-  --font-size-xs: 6px;
-  --font-size-sm: 8px;
-  --font-size-sl: 10px;
-  --font-size-md: 12px;
-  --font-size-lg: 15px;
-  --font-size-xlg: 20px;
-  --font-size-xxl: 25px;
-
-  --size-xxs: 5px;
-  --size-xs: 10px;
-  --size-sm: 15px;
-  --size-md: 20px;
-  --size-lg: 30px;
-  --size-xlg: 40px;
-  --size-xxl: 50px;
-
-  --def-border: 1px solid rgba(0, 0, 0, 0.2);
-  --def-shadow-1: 3px 3px 10px rgba(0, 0, 0, 0.2);
-
-  --space-xs: 2px;
-  --space-sm: 5px;
-  --space-md: 7px;
-  --space-lg: 10px;
-  --space-xl: 15px;
-
-  --radius-xs: 10px;
-  --radius-sm: 15px;
-  --radius-md: 30px;
-  --radius-lg: 50px;
-  --radius-xl: 100%;
+button {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
-:root[data-theme="dark"] {
-  --background-color-1: #181818;
-  --background-color-2: #1f1f1f;
-  --background-color-3: #242424;
-  --background-color-4: #2b2b2b;
-  --background-color-5: #1faa59; /* Mantive como cor de destaque */
-  --background-color-7: #ff0000; /* Mantive como cor de destaque */
-
-  --text-color-0: #ffffff;
-  --text-color-1: #e6e6e6;
-  --text-color-2: #b3b3b3;
-  --text-color-3: #f78923; /* Mantive como cor de destaque */
-  --text-color-4: #cccccc;
-  --text-color-5: #1faa59; /* Mantive como destaque verde */
-  --text-color-6: #ffffff;
-  --text-color-7: #ffffff;
-
-  --def-border: 1px solid rgba(255, 255, 255, 0.1);
+button:active {
+  transform: translateY(1px);
 }
 
-:root[data-theme="soft-dark"] {
-  --background-color-1: #202124;
-  --background-color-2: #2a2b2e;
-  --background-color-3: #303134;
-  --background-color-4: #3c4043;
-  --background-color-5: #34a853;
-  --background-color-6: #1f1f1f;
-
-  --text-color-0: #e8eaed;
-  --text-color-1: #e8eaed;
-  --text-color-2: #9aa0a6;
-  --text-color-3: #f9ab00;
-  --text-color-4: #bdc1c6;
-  --text-color-5: #34a853;
-  --text-color-6: #e8eaed;
+@media (hover: none), (pointer: coarse) {
+  button:active {
+    animation: tapFlash 0.2s ease;
+    background-color: rgba(255, 122, 26, 0.22) !important;
+    border-color: rgba(255, 122, 26, 0.55) !important;
+  }
 }
-:root[data-theme="soft-dark"] {
-  --background-color-1: #202124;
-  --background-color-2: #2a2b2e;
-  --background-color-3: #303134;
-  --background-color-4: #3c4043;
-  --background-color-5: #34a853;
-  --background-color-6: #1f1f1f;
 
-  --text-color-0: #e8eaed;
-  --text-color-1: #e8eaed;
-  --text-color-2: #9aa0a6;
-  --text-color-3: #f9ab00;
-  --text-color-4: #bdc1c6;
-  --text-color-5: #34a853;
-  --text-color-6: #e8eaed;
+@keyframes tapFlash {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.16);
+  }
+  100% {
+    filter: brightness(1);
+  }
 }
-body {
-  background: var(--background-color-1);
-  color: var(--text-color-1);
- font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+:focus-visible {
+  outline: 2px solid var(--text-color-3);
+  outline-offset: 2px;
+  border-radius: 8px;
 }

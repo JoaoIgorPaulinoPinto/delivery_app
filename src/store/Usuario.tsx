@@ -6,8 +6,8 @@ import { EnderecoPedido, UsuarioPedido } from "../models/models";
 const initialUsuario: UsuarioPedido = { nome: "", telefone: "" };
 const initialEndereco: EnderecoPedido = {
   cep: "",
-  uf: "",
-  cidade: "",
+  ufId: 0,
+  cidadeId: 0,
   rua: "",
   numero: "",
   bairro: "",

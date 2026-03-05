@@ -70,7 +70,9 @@ export default function HomeUI() {
             placeholder="Buscar produtos..."
           />
         </div>
-        <Settings2 size={24} />
+        <button className={styles.settingsButton} aria-label="Configuracoes">
+          <Settings2 size={18} />
+        </button>
       </div>
 
       <div className={styles.products}>

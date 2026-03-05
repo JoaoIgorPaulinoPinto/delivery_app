@@ -1,5 +1,6 @@
-"use client";
+﻿"use client";
 
+import { useEnderecoNomes } from "@/src/hooks/useEnderecoNomes";
 import { Clock, InfoIcon, MapPin, ShoppingBasket } from "lucide-react";
 import styles from "./navbar.module.css";
 import { useNavbarLogic } from "./useNavbarLogic";
@@ -22,6 +23,7 @@ export default function Navbar() {
     handleGoToOrders,
     maskWhatsApp,
   } = useNavbarLogic();
+  const localizacao = useEnderecoNomes(endereco);
 
   return (
     <nav className={styles.navbar}>
@@ -34,16 +36,18 @@ export default function Navbar() {
       </button>
 
       <div className={styles.left_side}>
-        <button className={styles.brandButton} onClick={handleGoHome}>
-          <span className={styles.brandName}>{nomeFantasia ?? "Início"}</span>
-        </button>
+        <div className={styles.brandButton} onClick={handleGoHome}>
+          <span className={styles.brandName}>{nomeFantasia ?? "Inicio"}</span>
+        </div>
 
         <div className={styles.infoContainer}>
           {endereco && (
             <div className={styles.infoItem}>
               <MapPin size={14} />
               <span>
-                {endereco.bairro} • {endereco.cidade}/{endereco.uf}
+                {endereco.bairro} -{" "}
+                {localizacao.cidadeNome || endereco.cidadeId}/
+                {localizacao.estadoNome || endereco.ufId}
               </span>
             </div>
           )}
@@ -52,7 +56,7 @@ export default function Navbar() {
             <Clock size={14} />
             {horarioHoje ? (
               <span>
-                {horarioHoje.abre?.substring(0, 5)} às{" "}
+                {horarioHoje.abre?.substring(0, 5)} as{" "}
                 {horarioHoje.fecha?.substring(0, 5)}
               </span>
             ) : (
@@ -85,9 +89,10 @@ export default function Navbar() {
             <div className={styles.dropdownItem}>
               <MapPin size={16} />
               <span>
-                {endereco.rua}, {endereco.numero} – {endereco.bairro}
+                {endereco.rua}, {endereco.numero} - {endereco.bairro}
                 <br />
-                {endereco.cidade}/{endereco.uf}
+                {localizacao.cidadeNome || endereco.cidadeId}/
+                {localizacao.estadoNome || endereco.ufId}
               </span>
             </div>
           )}
@@ -96,7 +101,7 @@ export default function Navbar() {
             <Clock size={16} />
             {horarioHoje ? (
               <span>
-                {horarioHoje.dia}: {horarioHoje.abre?.substring(0, 5)} às{" "}
+                {horarioHoje.dia}: {horarioHoje.abre?.substring(0, 5)} as{" "}
                 {horarioHoje.fecha?.substring(0, 5)}
               </span>
             ) : (
@@ -106,29 +111,28 @@ export default function Navbar() {
 
           {telefone && (
             <div className={styles.dropdownItem}>
-              📞 <span>Telefone: {maskWhatsApp(telefone)}</span>
+              <span>Telefone: {maskWhatsApp(telefone)}</span>
             </div>
           )}
 
           {whatsapp && (
             <div className={styles.dropdownItem}>
-              💬 <span>WhatsApp: {maskWhatsApp(whatsapp)}</span>
+              <span>WhatsApp: {maskWhatsApp(whatsapp)}</span>
             </div>
           )}
 
           {taxaEntrega !== undefined && (
             <div className={styles.dropdownItem}>
-              🚚{" "}
               <span>
                 Taxa de entrega:{" "}
-                {taxaEntrega === 0 ? "Grátis" : `R$ ${taxaEntrega.toFixed(2)}`}
+                {taxaEntrega === 0 ? "Gratis" : `R$ ${taxaEntrega.toFixed(2)}`}
               </span>
             </div>
           )}
 
           {pedidoMinimo !== undefined && (
             <div className={styles.dropdownItem}>
-              💰 <span>Pedido mínimo: R$ {pedidoMinimo.toFixed(2)}</span>
+              <span>Pedido minimo: R$ {pedidoMinimo.toFixed(2)}</span>
             </div>
           )}
         </div>
