@@ -8,13 +8,14 @@ export default async function EstabelecimentoLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
   const api = new API();
-  console.log("slug " + slug);
-  const data = await api.getEstabelecimento(slug);
-  if (!data) {
+
+  try {
+    await api.getEstabelecimento(slug);
+  } catch {
     notFound();
   }
 

@@ -1,9 +1,19 @@
 import axios from "axios";
 
-const isDev = process.env.NODE_NODE_ENV === "development";
+function normalizeApiBaseUrl(rawBaseUrl?: string): string {
+  const fallback = "http://localhost:5000/api/";
+  if (!rawBaseUrl) return fallback;
+
+  const sanitized = rawBaseUrl.trim().replace(/\/+$/, "");
+  if (!sanitized) return fallback;
+  if (/\/api$/i.test(sanitized)) return `${sanitized}/`;
+  return `${sanitized}/api/`;
+}
+
+const resolvedBaseUrl = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
 
 export const api = axios.create({
-  baseURL: "http://localhost:5000/api/", // Note: .NET HTTPS is usually 5001
+  baseURL: resolvedBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },
