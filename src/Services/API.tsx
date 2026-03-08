@@ -1,23 +1,19 @@
 import axios from "axios";
 
-function normalizeApiBaseUrl(rawBaseUrl?: string): string {
-  const fallback = "http://localhost:5000/api/";
-  if (!rawBaseUrl) return fallback;
+function buildApiPath(path: string): string {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const baseUrl = (process.env.NEXT_PUBLIC_API_URL ?? "").toLowerCase();
+  const hasApiPrefix =
+    baseUrl.endsWith("/api") || baseUrl.endsWith("/api/");
 
-  const sanitized = rawBaseUrl.trim().replace(/\/+$/, "");
-  if (!sanitized) return fallback;
-  if (/\/api$/i.test(sanitized)) return `${sanitized}/`;
-  return `${sanitized}/api/`;
+  return hasApiPrefix ? normalizedPath : `/api${normalizedPath}`;
 }
 
-const resolvedBaseUrl = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
-
 export const api = axios.create({
-  baseURL: resolvedBaseUrl,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
-  // This bypasses the self-signed certificate error in Node.js
 });
 
 export interface EnderecoResponse {
@@ -158,7 +154,7 @@ export class API {
   public async getEstabelecimento(
     slug: string,
   ): Promise<EstabelecimentoResponse> {
-    const response = await api.get("Estabelecimento", {
+    const response = await api.get(buildApiPath("/estabelecimento"), {
       params: {
         slug: slug,
       },
@@ -173,7 +169,7 @@ export class API {
   public async getCategorias(
     estabelecimentoSlug: string,
   ): Promise<CategoriaResponse[]> {
-    const response = await api.get("/Categoria", {
+    const response = await api.get(buildApiPath("/categoria"), {
       params: {
         slug: estabelecimentoSlug,
       },
@@ -184,7 +180,7 @@ export class API {
   public async getMetodosPagamento(
     estabelecimentoSlug: string,
   ): Promise<MetodoPagamentoResponse[]> {
-    const response = await api.get("/MetodoPagamento", {
+    const response = await api.get(buildApiPath("/metodopagamento"), {
       params: {
         slug: estabelecimentoSlug,
       },
@@ -195,7 +191,7 @@ export class API {
   public async getProdutos(
     estabelecimentoSlug: string,
   ): Promise<ProdutosResponse[]> {
-    const response = await api.get("/Produto", {
+    const response = await api.get(buildApiPath("/produto"), {
       params: {
         slug: estabelecimentoSlug,
       },
@@ -204,7 +200,7 @@ export class API {
   }
 
   public async getEstados(): Promise<EstadoResponse[]> {
-    const response = await api.get("/Localizacao/estados");
+    const response = await api.get(buildApiPath("/localizacao/estados"));
     const estados = Array.isArray(response.data) ? response.data : [];
 
     return estados.map((estado: Record<string, unknown>) => ({
@@ -215,7 +211,7 @@ export class API {
   }
 
   public async getCidades(estadoId: number): Promise<CidadeResponse[]> {
-    const response = await api.get("/Localizacao/cidades", {
+    const response = await api.get(buildApiPath("/localizacao/cidades"), {
       params: {
         estadoId,
       },
@@ -260,7 +256,7 @@ export class API {
       observacao: pedido.observacao || "",
     };
 
-    const response = await api.post("/Pedido", pedidoMapeado, {
+    const response = await api.post(buildApiPath("/pedido"), pedidoMapeado, {
       params: {
         slug: estabelecimentoSlug,
       },
@@ -275,7 +271,7 @@ export class API {
   }
 
   public async getPedidos(slug: string): Promise<PedidoResponse[]> {
-    const response = await api.get("/Pedido/cliente", {
+    const response = await api.get(buildApiPath("/pedido/cliente"), {
       headers: {
         accept: "*/*",
         clientKey: localStorage.getItem("clientKey") || "",
