@@ -75,6 +75,66 @@
   cursor: not-allowed;
 }
 
+.searchSelect {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.searchSelectInput {
+  flex: 1;
+  padding: 0.7rem 0.8rem;
+  border-radius: var(--radius-xs);
+  border: var(--def-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-color-1);
+}
+
+.searchSelectInput:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.searchSelectList {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: linear-gradient(165deg, var(--background-color-2), var(--background-color-3));
+  border: var(--def-border);
+  border-radius: var(--radius-xs);
+  box-shadow: var(--def-shadow-1);
+  z-index: 10;
+}
+
+.searchSelectItem {
+  padding: 0.65rem 0.85rem;
+  cursor: pointer;
+  color: var(--text-color-1);
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .searchSelectItem:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+.pill {
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-color-1);
+  font-size: var(--font-size-sl);
+  white-space: nowrap;
+}
+
 .modalConfirmButton {
   width: 100%;
   padding: 0.85rem;

@@ -18,7 +18,7 @@ export default function FinishOrderUI({
     <div className={d.isOpen ? styles.confirmationOverlay : styles.footer}>
       <div className={styles.footer_container}>
         <div className={styles.footer_head}>
-          <div className={styles.footer_head}>
+          <div className={styles.footer_head_price}>
             <span className={styles.footer_total}>
               {formatMoney(d.totalGeral)}
             </span>

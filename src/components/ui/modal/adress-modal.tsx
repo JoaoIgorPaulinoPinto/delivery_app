@@ -34,6 +34,10 @@ export default function AddressModal({
   const [cidades, setCidades] = useState<CidadeResponse[]>([]);
   const [isLoadingEstados, setIsLoadingEstados] = useState(false);
   const [isLoadingCidades, setIsLoadingCidades] = useState(false);
+  const [ufSearch, setUfSearch] = useState("");
+  const [citySearch, setCitySearch] = useState("");
+  const [showUfList, setShowUfList] = useState(false);
+  const [showCityList, setShowCityList] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -94,6 +98,21 @@ export default function AddressModal({
     };
   }, [api, ufId]);
 
+  const selectedUf = estados.find((e) => e.id === ufId);
+  const selectedCity = cidades.find((c) => c.id === cidadeId);
+
+  const filteredEstados = useMemo(() => {
+    const term = ufSearch.toLowerCase();
+    return estados.filter((e) =>
+      `${e.sigla} ${e.nome}`.toLowerCase().includes(term),
+    );
+  }, [estados, ufSearch]);
+
+  const filteredCidades = useMemo(() => {
+    const term = citySearch.toLowerCase();
+    return cidades.filter((c) => c.nome.toLowerCase().includes(term));
+  }, [cidades, citySearch]);
+
   if (!isOpen) return null;
 
   const handleSave = () => {
@@ -134,6 +153,7 @@ export default function AddressModal({
               value={cep}
               onValueChange={(values) => setCep(values.value)}
               placeholder="00.000-000"
+              autoComplete="off"
               className={styles.modalInput}
             />
           </div>
@@ -141,46 +161,108 @@ export default function AddressModal({
           <div className={styles.row}>
             <div className={`${styles.modalInputGroup} ${styles.flex1}`}>
               <label>UF *</label>
-              <select
-                className={styles.modalSelect}
-                value={ufId}
-                onChange={(e) => {
-                  const selectedUfId = Number(e.target.value);
-                  setUfId(selectedUfId);
-                  setCidadeId(0);
-                }}
-                disabled={isLoadingEstados}
-              >
-                <option value={0}>Selecione</option>
-                {estados.map((estado) => (
-                  <option key={estado.id} value={estado.id}>
-                    {estado.sigla || estado.nome}
-                  </option>
-                ))}
-              </select>
+              <div className={styles.searchSelect}>
+                <input
+                  className={styles.searchSelectInput}
+                  value={ufSearch}
+                  placeholder={selectedUf?.sigla || "Buscar UF"}
+                  autoComplete="off"
+                  onFocus={() => {
+                    setShowUfList(true);
+                    setUfSearch("");
+                  }}
+                  onChange={(e) => setUfSearch(e.target.value)}
+                  onBlur={() => setTimeout(() => setShowUfList(false), 120)}
+                  disabled={isLoadingEstados}
+                />
+                {selectedUf && !ufSearch && (
+                  <span className={styles.pill}>{selectedUf.sigla}</span>
+                )}
+                {showUfList && (
+                  <div className={styles.searchSelectList}>
+                    {isLoadingEstados && (
+                      <div className={styles.searchSelectItem}>Carregando...</div>
+                    )}
+                    {!isLoadingEstados &&
+                      (filteredEstados.length ? (
+                        filteredEstados.map((estado) => (
+                          <div
+                            key={estado.id}
+                            className={styles.searchSelectItem}
+                            onMouseDown={() => {
+                              setUfId(estado.id);
+                              setCidadeId(0);
+                              setUfSearch("");
+                              setShowUfList(false);
+                            }}
+                          >
+                            <strong>{estado.sigla}</strong> — {estado.nome}
+                          </div>
+                        ))
+                      ) : (
+                        <div className={styles.searchSelectItem}>
+                          Nenhum estado encontrado
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className={`${styles.modalInputGroup} ${styles.flex3}`}>
               <label>Cidade *</label>
-              <select
-                className={styles.modalSelect}
-                value={cidadeId}
-                onChange={(e) => setCidadeId(Number(e.target.value))}
-                disabled={!ufId || isLoadingCidades}
-              >
-                <option value={0}>
-                  {!ufId
-                    ? "Selecione a UF primeiro"
-                    : isLoadingCidades
-                      ? "Carregando cidades..."
-                      : "Selecione a cidade"}
-                </option>
-                {cidades.map((cidade) => (
-                  <option key={cidade.id} value={cidade.id}>
-                    {cidade.nome}
-                  </option>
-                ))}
-              </select>
+              <div className={styles.searchSelect}>
+                <input
+                  className={styles.searchSelectInput}
+                  value={citySearch}
+                  placeholder={
+                    !ufId
+                      ? "Selecione a UF"
+                      : selectedCity?.nome || "Buscar cidade"
+                  }
+                  autoComplete="off"
+                  onFocus={() => {
+                    if (!ufId) return;
+                    setShowCityList(true);
+                    setCitySearch("");
+                  }}
+                  onChange={(e) => setCitySearch(e.target.value)}
+                  onBlur={() => setTimeout(() => setShowCityList(false), 120)}
+                  disabled={!ufId || isLoadingCidades}
+                />
+                {selectedCity && !citySearch && (
+                  <span className={styles.pill}>{selectedCity.nome}</span>
+                )}
+                {showCityList && (
+                  <div className={styles.searchSelectList}>
+                    {isLoadingCidades && (
+                      <div className={styles.searchSelectItem}>
+                        Carregando cidades...
+                      </div>
+                    )}
+                    {!isLoadingCidades &&
+                      (filteredCidades.length ? (
+                        filteredCidades.map((cidade) => (
+                          <div
+                            key={cidade.id}
+                            className={styles.searchSelectItem}
+                            onMouseDown={() => {
+                              setCidadeId(cidade.id);
+                              setCitySearch("");
+                              setShowCityList(false);
+                            }}
+                          >
+                            {cidade.nome}
+                          </div>
+                        ))
+                      ) : (
+                        <div className={styles.searchSelectItem}>
+                          Nenhuma cidade encontrada
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -190,6 +272,7 @@ export default function AddressModal({
               type="text"
               value={rua}
               onChange={(e) => setRua(e.target.value)}
+              autoComplete="off"
               placeholder="Ex: Rua Joao Martins"
             />
           </div>
@@ -198,22 +281,24 @@ export default function AddressModal({
             <div className={`${styles.modalInputGroup} ${styles.flex1}`}>
               <label>Numero *</label>
               <input
-                type="text"
-                value={numero}
-                onChange={(e) => setNumero(e.target.value)}
-                placeholder="123"
-              />
-            </div>
-            <div className={`${styles.modalInputGroup} ${styles.flex2}`}>
-              <label>Bairro *</label>
-              <input
-                type="text"
-                value={bairro}
-                onChange={(e) => setBairro(e.target.value)}
-                placeholder="Ex: Centro"
-              />
-            </div>
+              type="text"
+              value={numero}
+              onChange={(e) => setNumero(e.target.value)}
+              autoComplete="off"
+              placeholder="123"
+            />
           </div>
+          <div className={`${styles.modalInputGroup} ${styles.flex2}`}>
+            <label>Bairro *</label>
+            <input
+              type="text"
+              value={bairro}
+              onChange={(e) => setBairro(e.target.value)}
+              autoComplete="off"
+              placeholder="Ex: Centro"
+            />
+          </div>
+        </div>
 
           <div className={styles.modalInputGroup}>
             <label>Complemento</label>
@@ -221,6 +306,7 @@ export default function AddressModal({
               type="text"
               value={complemento}
               onChange={(e) => setComplemento(e.target.value)}
+              autoComplete="off"
               placeholder="Apto, Bloco..."
             />
           </div>

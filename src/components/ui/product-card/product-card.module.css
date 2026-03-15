@@ -74,8 +74,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--radius-xs);
   border: var(--def-border);
   background: var(--background-color-1);
@@ -98,8 +98,18 @@
     padding: var(--space-md);
   }
 
+  .product_card_head {
+    gap: var(--space-md);
+  }
+
+  .add_btn,
+  .product_card_head button {
+    width: 28px;
+    height: 28px;
+  }
+
   .product_img {
-    width: 72px;
-    height: 72px;
+    width: 68px;
+    height: 68px;
   }
 }
